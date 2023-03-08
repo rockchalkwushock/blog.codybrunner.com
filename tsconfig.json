@@ -1,3 +1,16 @@
 {
-  "extends": "astro/tsconfigs/strictest"
+	"extends": "astro/tsconfigs/strictest",
+	"compilerOptions": {
+		"baseUrl": "./src",
+		"paths": {
+			"@assets/*": ["assets/*"],
+			"@components/*": ["components/*"],
+			"@interfaces/*": ["interfaces/*"],
+			"@layouts/*": ["layouts/*"],
+			"@styles/*": ["styles/*"],
+			"@utils/*": ["utils/*"]
+		},
+		"strictNullChecks": true
+	},
+	"include": ["src"]
 }
