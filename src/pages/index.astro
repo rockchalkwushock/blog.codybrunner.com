@@ -1,11 +1,59 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro'
+import { getCollection } from 'astro:content'
+// Components
 import Head from '@components/Head.astro'
+import Link from '@components/Link.astro'
+import List from '@components/List.astro'
+import ListItem from '@components/ListItem.astro'
+import Main from '@components/Main.astro'
+import Section from '@components/Section.astro'
+import SubTitle from '@components/SubTitle.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+
+const posts = await getCollection('posts')
+
+const featuredPosts = posts.filter((post) => post.data.featured)
+const latestPosts = posts.slice(0, 6)
 ---
 
 <BaseLayout>
 	<Head slot='metadata' />
-	<main slot='content'>
-		<h1 class="text-5xl">Astro</h1>
-	</main>
+	<Main class='space-y-8' slot='content'>
+		<Section class='grid grid-cols-1 gap-6 md:grid-cols-2'>
+			<div class='col-span-2 flex flex-col space-y-6'>
+				<SubTitle>Featured Posts</SubTitle>
+				<List
+					class='w-full justify-between space-y-8 md:flex-row md:space-x-8 md:space-y-0'
+					kind='unordered'
+				>
+					{
+						featuredPosts.map(({ data: post }) => (
+							<ListItem class='h-80 w-full rounded-lg bg-gradient-to-tr from-aura-orange/50  to-aura-purple/40 p-4 lg:transition-all lg:duration-200 lg:ease-in-out lg:hover:scale-105 lg:hover:from-aura-pink/70 lg:hover:to-aura-purple lg:hover:shadow-lg lg:hover:shadow-aura-purple lg:hover:delay-75'>
+								<SubTitle class='text-aura-white' heading='h3'>
+									{post.title}
+								</SubTitle>
+							</ListItem>
+						))
+					}
+				</List>
+			</div>
+			<div class='col-span-2 flex flex-col space-y-6'>
+				<div class="flex items-center justify-between">
+					<SubTitle>Latest Posts</SubTitle>
+					<Link aria-label="Link to more blog posts" href="/1">View More</Link>
+				</div>
+				<List class='space-y-4' kind='unordered'>
+					{
+						latestPosts.map(({ data: post }) => (
+							<ListItem class='lg:group lg:transition-all lg:delay-75 lg:duration-150 lg:ease-in-out lg:hover:scale-105 lg:hover:bg-gradient-to-r lg:hover:from-aura-purple lg:hover:to-aura-green'>
+								<SubTitle class='text-aura-white' heading='h4'>
+									{post.title}
+								</SubTitle>
+							</ListItem>
+						))
+					}
+				</List>
+			</div>
+		</Section>
+	</Main>
 </BaseLayout>
