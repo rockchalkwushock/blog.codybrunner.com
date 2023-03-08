@@ -1,15 +1,25 @@
 {
-	"name": "blog.codybrunner.com",
-	"type": "module",
-	"version": "0.0.1",
-	"scripts": {
-		"dev": "astro dev",
-		"start": "astro dev",
-		"build": "astro build",
-		"preview": "astro preview",
-		"astro": "astro"
-	},
-	"dependencies": {
-		"astro": "^2.0.14"
-	}
+  "name": "blog.codybrunner.com",
+  "version": "0.0.1",
+  "description": "My personal blog that covers topics from web development, being an expat, travel, and more.",
+  "author": {
+    "email": "me@codybrunner.com",
+    "name": "Cody Brunner",
+    "url": "https://codybrunner.com"
+  },
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=18.x",
+    "pnpm": "7.29.0"
+  },
+  "packageManager": "pnpm@7.29.0",
+  "scripts": {
+    "build": "astro build",
+    "dev": "astro dev",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "2.1.0"
+  }
 }
