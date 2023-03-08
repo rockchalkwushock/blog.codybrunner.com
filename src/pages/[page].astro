@@ -1,0 +1,53 @@
+---
+import type { GetStaticPathsOptions, Page } from 'astro'
+import type { CollectionEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
+// Components
+import BaseLayout from '@layouts/BaseLayout.astro'
+import Head from '@components/Head.astro'
+import Link from '@components/Link.astro'
+import List from '@components/List.astro'
+import ListItem from '@components/ListItem.astro'
+import Main from '@components/Main.astro'
+import Pagination from '@components/Pagination.astro'
+import Section from '@components/Section.astro'
+import { PAGE_SIZE } from '@config'
+
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+	const posts = await getCollection('posts')
+
+	return paginate(posts, {
+		pageSize: PAGE_SIZE,
+	})
+}
+
+export interface Props {
+	readonly page: Page<CollectionEntry<'posts'>>
+}
+
+console.log(Astro.params)
+console.log(Astro.props)
+const { page } = Astro.props
+---
+
+<BaseLayout>
+	<Head slot='metadata' />
+	<Main class="space-y-6" slot='content'>
+		<Pagination page={page} />
+		<Section>
+			<List class="grid flex-1 grid-cols-1 gap-6 md:grid-cols-2" kind='unordered'>
+				{
+					page.data.map(p => (
+						<ListItem class="rounded-lg border border-solid p-4">
+							<Link aria-label={`Link to ${p.data.title}`} href={`/${p.slug}`}>
+								{p.data.title}
+							</Link>
+						</ListItem>
+					))
+				}
+			</List>
+		</Section>
+		<Pagination page={page} />
+	</Main>
+</BaseLayout>
