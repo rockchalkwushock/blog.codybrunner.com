@@ -1,3 +1,41 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+.prose {
+	h1 {
+		@apply hidden;
+	}
+	.contains-task-list {
+		@apply list-none pl-0 md:pl-4;
+		.task-list-item {
+			@apply leading-6 tracking-wide text-left pl-0;
+			&::before {
+				content: none;
+			}
+			*:first-child,
+			*:last-child {
+				@apply my-0.5;
+			}
+			input[type='checkbox'] {
+				@apply shrink-0 appearance-none border border-indigo-500 dark:border-aura-purple h-4 w-4 rounded-full my-0 mr-1 checked:bg-indigo-500 dark:checked:bg-aura-purple;
+			}
+			ul > li {
+				@apply text-base md:text-lg tracking-wide;
+				&::marker {
+					content: '-';
+					@apply text-blue-500 dark:text-aura-blue;
+				}
+			}
+		}
+	}
+	/* remark-flexible-code-tiles + astro-code style overrides */
+
+	.remark-code-container > .remark-code-title:defined {
+		@apply bg-[#292D3E] text-base border-b pl-5 py-2 rounded-t-md;
+	}
+
+	.remark-code-title + .astro-code {
+		@apply mt-0 rounded-t-none;
+	}
+}
