@@ -18,6 +18,7 @@ module.exports = {
 		'public/',
 		'package.json',
 		'tsconfig.json',
+		'*.css',
 	],
 	overrides: [
 		{

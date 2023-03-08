@@ -1,0 +1,39 @@
+---
+import '@styles/global.css'
+import '@fontsource/fira-code/400.css'
+import '@fontsource/inter/400.css'
+
+export interface Props {
+	readonly description?: string
+	readonly image?:
+		| {
+				alt: string
+				src: string
+		  }
+		| undefined
+	readonly title?: string
+}
+
+const CONSTANTS = {
+	author: 'Cody Brunner',
+	description: 'My stretch of pipe in the world wide inter-tubes.',
+	imageAlt: '',
+	title: 'Home',
+	twitter: '@RockChalkDev',
+}
+
+const { description = CONSTANTS.description, title = CONSTANTS.title } =
+	Astro.props
+
+const siteTitle = `${title} | codybrunner.com`
+---
+
+<meta charset='utf-8' />
+<meta name='viewport' content='width=device-width, initial-scale=1' />
+<meta name='generator' content={Astro.generator} />
+
+<!-- Primary Meta Tags -->
+<meta name='author' content={CONSTANTS.author} />
+<meta name='description' content={description} />
+<meta name='title' content={siteTitle} />
+<title>{siteTitle}</title>
