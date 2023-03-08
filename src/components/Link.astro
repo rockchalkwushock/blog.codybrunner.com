@@ -1,0 +1,38 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import { twMerge } from 'tailwind-merge'
+
+export interface Props extends HTMLAttributes<'a'> {
+	readonly isActive?: boolean
+	readonly isDisabled?: boolean
+	readonly isExternal?: boolean
+}
+
+const BASE_STYLES = [
+	'delay-75',
+	'duration-200',
+	'ease-in-out',
+	'text-aura-white',
+	'transition-all',
+	'hover:text-aura-orange',
+]
+const { class: cls, isActive, isDisabled, isExternal, ...rest } = Astro.props
+const styles = twMerge(
+	BASE_STYLES,
+	cls,
+	isDisabled ? 'opacity-50 cursor-not-allowed hover:text-aura-white' : undefined,
+	isExternal ? undefined : isActive ? 'text-aura-purple' : 'text-aura-white'
+)
+---
+
+{
+	isExternal ? (
+		<a {...rest} class={styles} rel='noopener noreferrer' target='_blank'>
+			<slot />
+		</a>
+	) : (
+		<a {...rest} class={styles} rel='prefetch'>
+			<slot />
+		</a>
+	)
+}
