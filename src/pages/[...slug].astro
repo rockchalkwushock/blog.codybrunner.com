@@ -1,0 +1,85 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
+// Components
+import BaseLayout from '@layouts/BaseLayout.astro'
+import Head from '@components/Head.astro'
+import Link from '@components/Link.astro'
+import Main from '@components/Main.astro'
+import Section from '@components/Section.astro'
+import {
+	filterPosts,
+	isAfter,
+	isPublishedAndNotArchived,
+	sortPosts,
+} from '@utils/post'
+import Icon from 'astro-icon'
+
+export async function getStaticPaths() {
+	let posts = await getCollection('posts')
+
+	if (import.meta.env.MODE === 'production') {
+		posts = sortPosts(filterPosts(posts, isPublishedAndNotArchived), isAfter)
+	} else {
+		posts = sortPosts(posts, isAfter)
+	}
+
+	return posts.map((post, idx) => ({
+		params: { slug: post.slug },
+		props: {
+			next: posts.length === idx + 1 ? undefined : posts[idx + 1],
+			post,
+			prev: idx === 0 ? undefined : posts[idx - 1],
+		},
+	}))
+}
+
+interface Props {
+	readonly next?: CollectionEntry<'posts'>
+	readonly post: CollectionEntry<'posts'>
+	readonly prev?: CollectionEntry<'posts'>
+}
+
+const {
+	next,
+	post: { data: post, render },
+	prev,
+} = Astro.props
+const { Content } = await render()
+---
+
+<BaseLayout>
+	<Head
+		description={post.description}
+		image={post.heroImage}
+		slot='metadata'
+		title={post.title}
+	/>
+	<Main class='space-y-8' slot='content'>
+		<article class='prose prose-lg prose-invert max-w-none'>
+			<Content />
+		</article>
+		<Section class='flex-row items-center justify-between'>
+			{
+				prev && (
+					<Link
+						class='rounded-lg bg-aura-purple py-2 px-4 font-bold'
+						href={`/${prev.slug}`}
+					>
+						<Icon name='mdi:arrow-left-bold-circle' class='h-10 w-10' />
+					</Link>
+				)
+			}
+			{
+				next && (
+					<Link
+						class='rounded-lg bg-aura-purple py-2 px-4 font-bold'
+						href={`/${next.slug}`}
+					>
+						<Icon name='mdi:arrow-right-bold-circle' class='h-10 w-10' />
+					</Link>
+				)
+			}
+		</Section>
+	</Main>
+</BaseLayout>

@@ -1,21 +1,24 @@
 ---
 import type { GetStaticPathsOptions, Page } from 'astro'
-import type { CollectionEntry } from 'astro:content'
+import type { Post } from 'content/config'
 import { getCollection } from 'astro:content'
-// Components
-import BaseLayout from '@layouts/BaseLayout.astro'
-import Head from '@components/Head.astro'
-import Link from '@components/Link.astro'
-import List from '@components/List.astro'
-import ListItem from '@components/ListItem.astro'
-import Main from '@components/Main.astro'
-import Pagination from '@components/Pagination.astro'
-import Section from '@components/Section.astro'
 import { PAGE_SIZE } from '@config'
-
+import {
+	filterPosts,
+	isAfter,
+	isPublishedAndNotArchived,
+	sortPosts,
+} from '@utils/post'
+import PaginatedLayout from '@layouts/PaginatedLayout.astro'
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-	const posts = await getCollection('posts')
+	let posts = await getCollection('posts')
+
+	if (import.meta.env.MODE === 'production') {
+		posts = sortPosts(filterPosts(posts, isPublishedAndNotArchived), isAfter)
+	} else {
+		posts = sortPosts(posts, isAfter)
+	}
 
 	return paginate(posts, {
 		pageSize: PAGE_SIZE,
@@ -23,31 +26,14 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 }
 
 export interface Props {
-	readonly page: Page<CollectionEntry<'posts'>>
+	readonly page: Page<Post>
 }
 
-console.log(Astro.params)
-console.log(Astro.props)
 const { page } = Astro.props
 ---
 
-<BaseLayout>
-	<Head slot='metadata' />
-	<Main class="space-y-6" slot='content'>
-		<Pagination page={page} />
-		<Section>
-			<List class="grid flex-1 grid-cols-1 gap-6 md:grid-cols-2" kind='unordered'>
-				{
-					page.data.map(p => (
-						<ListItem class="rounded-lg border border-solid p-4">
-							<Link aria-label={`Link to ${p.data.title}`} href={`/${p.slug}`}>
-								{p.data.title}
-							</Link>
-						</ListItem>
-					))
-				}
-			</List>
-		</Section>
-		<Pagination page={page} />
-	</Main>
-</BaseLayout>
+<PaginatedLayout
+	description={`Page ${page.currentPage} of the latest posts on blog.codybrunner.com`}
+	page={page}
+	title={`Page ${page.currentPage}`}
+/>

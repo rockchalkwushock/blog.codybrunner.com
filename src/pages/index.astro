@@ -9,11 +9,29 @@ import Main from '@components/Main.astro'
 import Section from '@components/Section.astro'
 import SubTitle from '@components/SubTitle.astro'
 import BaseLayout from '@layouts/BaseLayout.astro'
+import {
+	filterPosts,
+	isAfter,
+	isFeatured,
+	isPublishedAndNotArchived,
+	pickPosts,
+	sortPosts,
+} from '@utils/post'
+import FormattedDate from '@components/FormattedDate.astro'
 
-const posts = await getCollection('posts')
+let posts = await getCollection('posts')
 
-const featuredPosts = posts.filter((post) => post.data.featured)
-const latestPosts = posts.slice(0, 6)
+if (import.meta.env.MODE === 'production') {
+	posts = sortPosts(filterPosts(posts, isPublishedAndNotArchived), isAfter)
+} else {
+	posts = sortPosts(posts, isAfter)
+}
+
+const featuredPosts = filterPosts(posts, isFeatured)
+const latestPosts = pickPosts(
+	filterPosts(posts, post => !isFeatured(post)),
+	6
+)
 ---
 
 <BaseLayout>
@@ -27,28 +45,44 @@ const latestPosts = posts.slice(0, 6)
 					kind='unordered'
 				>
 					{
-						featuredPosts.map(({ data: post }) => (
-							<ListItem class='h-80 w-full rounded-lg bg-gradient-to-tr from-aura-orange/50  to-aura-purple/40 p-4 lg:transition-all lg:duration-200 lg:ease-in-out lg:hover:scale-105 lg:hover:from-aura-pink/70 lg:hover:to-aura-purple lg:hover:shadow-lg lg:hover:shadow-aura-purple lg:hover:delay-75'>
+						featuredPosts.map(({ data: post, slug }) => (
+							<ListItem class='h-80 w-full rounded-lg bg-gradient-to-tr from-aura-blue/50 to-aura-purple p-4 lg:transition-all lg:duration-200 lg:ease-in-out lg:hover:scale-105 lg:hover:from-aura-pink/50 lg:hover:to-aura-purple lg:hover:delay-75'>
 								<SubTitle class='text-aura-white' heading='h3'>
-									{post.title}
+									<Link href={slug}>{post.title}</Link>
 								</SubTitle>
+								<FormattedDate
+									date={post.updatedAt ?? post.publishedAt ?? post.createdAt}
+								/>
 							</ListItem>
 						))
 					}
 				</List>
 			</div>
 			<div class='col-span-2 flex flex-col space-y-6'>
-				<div class="flex items-center justify-between">
+				<div
+					class='flex flex-col items-center space-y-4 md:flex-row md:justify-between md:space-y-0'
+				>
 					<SubTitle>Latest Posts</SubTitle>
-					<Link aria-label="Link to more blog posts" href="/1">View More</Link>
+					<div class='flex items-center space-x-2'>
+						<Link aria-label='Link to more blog posts' href='/1'>
+							View More
+						</Link>
+						<span>|</span>
+						<Link aria-label='Link to archived blog posts' href='/archive'>
+							View Archive
+						</Link>
+					</div>
 				</div>
-				<List class='space-y-4' kind='unordered'>
+				<List class='space-y-6' kind='unordered'>
 					{
-						latestPosts.map(({ data: post }) => (
-							<ListItem class='lg:group lg:transition-all lg:delay-75 lg:duration-150 lg:ease-in-out lg:hover:scale-105 lg:hover:bg-gradient-to-r lg:hover:from-aura-purple lg:hover:to-aura-green'>
+						latestPosts.map(({ data: post, slug }) => (
+							<ListItem class='flex flex-col items-start justify-between space-y-3 rounded-lg bg-gradient-to-tr from-aura-blue/50 to-aura-purple p-3 md:flex-row md:items-center md:space-y-0 lg:transition-all lg:duration-200 lg:ease-in-out lg:hover:scale-105 lg:hover:from-aura-pink/50 lg:hover:to-aura-purple lg:hover:delay-75'>
 								<SubTitle class='text-aura-white' heading='h4'>
-									{post.title}
+									<Link href={slug}>{post.title}</Link>
 								</SubTitle>
+								<FormattedDate
+									date={post.updatedAt ?? post.publishedAt ?? post.createdAt}
+								/>
 							</ListItem>
 						))
 					}

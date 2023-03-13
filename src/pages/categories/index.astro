@@ -1,0 +1,31 @@
+---
+import type { CategoryEnum } from 'content/config';
+import { getCollection } from 'astro:content'
+import { filterPosts, getCategoryCount, isPublished } from '@utils/post';
+// Components
+import TaxonomyListLayout from '@layouts/TaxonomyListLayout.astro';
+
+
+const CONSTANTS = {
+  description: 'List of categories of posts present in my blog.',
+  title: 'Categories',
+}
+
+let posts = await getCollection('posts')
+if (import.meta.env.MODE === 'production') {
+  posts = filterPosts(posts, isPublished)
+}
+
+const categoryCountMap = getCategoryCount(posts)
+
+const categories = [...new Set(posts.map(post => post.data.categories).flat())].sort()
+---
+
+<TaxonomyListLayout
+  countMap={categoryCountMap}
+  description={CONSTANTS.description}
+  kind="category"
+  taxonomies={categories as CategoryEnum[]}
+  title={CONSTANTS.title}
+/>
+

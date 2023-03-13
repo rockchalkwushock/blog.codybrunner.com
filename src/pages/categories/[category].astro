@@ -1,0 +1,37 @@
+---
+import type { CategoryEnum, Post } from "content/config"
+import { getCollection } from "astro:content";
+import { filterPosts, hasCategory, isPublished } from "@utils/post";
+// Components
+import TaxonomyLayout from "@layouts/TaxonomyLayout.astro";
+import { toCapitalize } from "@utils/string";
+
+
+export async function getStaticPaths() {
+  let posts = await getCollection("posts");
+  if (import.meta.env.MODE === 'production') {
+    posts = filterPosts(posts, isPublished)
+  }
+  const categories = [...new Set(posts.map((post) => post.data.categories).flat())];
+  return categories.map((category) => {
+    return {
+      params: { category },
+      props: { posts: filterPosts(posts, post => hasCategory(post, category as CategoryEnum)) },
+    };
+  });
+}
+
+interface Props {
+  readonly posts: Post[]
+}
+const { category } = Astro.params;
+const { posts } = Astro.props;
+const title = category ? toCapitalize(category) : 'Uncategorized';
+---
+
+<TaxonomyLayout
+  description={`List of posts in the ${category} category.`}
+  kind="category"
+  posts={posts}
+  title={title}
+/>

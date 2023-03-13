@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+// Components
+import BaseLayout from "@layouts/BaseLayout.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import Head from "@components/Head.astro";
+import Link from "@components/Link.astro";
+import List from "@components/List.astro";
+import ListItem from "@components/ListItem.astro";
+import Main from "@components/Main.astro";
+import Section from "@components/Section.astro";
+import Title from "@components/Title.astro";
+import { filterPosts, isAfter, isArchived, sortPosts } from "@utils/post";
+
+let posts = await getCollection("posts");
+
+posts = sortPosts(filterPosts(posts, isArchived), isAfter)
+---
+
+<BaseLayout>
+  <Head slot="metadata" />
+  <Main slot="content">
+    <Title>Archived Posts</Title>
+    <Section>
+      <List class="space-y-3" kind="unordered">
+        {posts.map(({data: post, slug}) => (
+          <ListItem class="flex items-center justify-between">
+            <Link href={slug}>{post.title}</Link>
+            <FormattedDate date={post.updatedAt ?? post.publishedAt ?? post.createdAt} format="long" />
+          </ListItem>
+        ))}
+      </List>
+    </Section>
+  </Main>
+</BaseLayout>
+
