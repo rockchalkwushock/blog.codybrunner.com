@@ -1,0 +1,22 @@
+---
+import type { CategoryEnum } from 'content/config'
+import Icon from 'astro-icon'
+import Link from './Link.astro'
+
+export interface Props {
+	readonly category: CategoryEnum
+}
+
+const { category } = Astro.props
+---
+
+<Link
+	aria-label={`Link to posts in the category of ${category}.`}
+	class='flex items-center space-x-1'
+	href={`/categories/${category}`}
+>
+	<Icon aria-label='Category Icon' class='h-4 w-4' name='mdi:pound' />
+	<span>
+		<slot />
+	</span>
+</Link>
