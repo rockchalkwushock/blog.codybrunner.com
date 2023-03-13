@@ -6,7 +6,7 @@ import NavItem from './NavItem.astro'
 import { LINKS, ROUTES } from '@config'
 
 const { github, linkedin, meet, twitter } = LINKS
-const { bookshelf, home, portfolio, resume, uses } = ROUTES
+const { blog, bookshelf, home, portfolio, resume, uses } = ROUTES
 
 /**
  * This Navigation Implementation was taken from:
@@ -23,12 +23,12 @@ const navigation: Array<NavItemProps> = [
 		linkLabel: 'Link to Home Page.',
 		to: home,
 	},
-	// {
-	// 	iconLabel: 'Book Icon.',
-	// 	iconName: 'blog',
-	// 	linkLabel: 'Link to Blog Page.',
-	// 	to: blog,
-	// },
+	{
+		iconLabel: 'Book Icon.',
+		iconName: 'blog',
+		linkLabel: 'Link to Blog Page.',
+		to: blog,
+	},
 	{
 		iconLabel: 'Books Icon.',
 		iconName: 'bookShelf',
