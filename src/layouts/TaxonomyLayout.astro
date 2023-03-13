@@ -1,0 +1,44 @@
+---
+import type { Post } from 'content/config'
+// Components
+import BaseLayout from '@layouts/BaseLayout.astro'
+import FormattedDate from '@components/FormattedDate.astro'
+import Head from '@components/Head.astro'
+import Link from '@components/Link.astro'
+import List from '@components/List.astro'
+import ListItem from '@components/ListItem.astro'
+import Main from '@components/Main.astro'
+import Section from '@components/Section.astro'
+import Title from '@components/Title.astro'
+
+export interface Props {
+	readonly description: string
+	readonly kind: 'category' | 'tag'
+	readonly posts: Post[]
+	readonly title: string
+}
+
+const { description, posts, title } = Astro.props
+---
+
+<BaseLayout>
+	<Head description={description} slot='metadata' title={title} />
+	<Main slot='content'>
+		<Title>{title}</Title>
+		<Section>
+			<List class='space-y-3' kind='unordered'>
+				{
+					posts.map(({ data: post, slug }) => (
+						<ListItem class='flex items-center justify-between'>
+							<Link href={`/${slug}`}>{post.title}</Link>
+							<FormattedDate
+								date={post.updatedAt ?? post.publishedAt ?? post.createdAt}
+								format='long'
+							/>
+						</ListItem>
+					))
+				}
+			</List>
+		</Section>
+	</Main>
+</BaseLayout>
