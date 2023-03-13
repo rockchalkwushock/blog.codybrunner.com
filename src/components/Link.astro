@@ -14,13 +14,15 @@ const BASE_STYLES = [
 	'ease-in-out',
 	'text-aura-white',
 	'transition-all',
-	'hover:text-aura-orange',
+	'hover:text-aura-blue',
 ]
 const { class: cls, isActive, isDisabled, isExternal, ...rest } = Astro.props
 const styles = twMerge(
 	BASE_STYLES,
 	cls,
-	isDisabled ? 'opacity-50 cursor-not-allowed hover:text-aura-white' : undefined,
+	isDisabled
+		? 'opacity-50 cursor-not-allowed hover:text-aura-white'
+		: undefined,
 	isExternal ? undefined : isActive ? 'text-aura-purple' : 'text-aura-white'
 )
 ---

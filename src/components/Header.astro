@@ -67,7 +67,11 @@ const CONSTANTS = [
 	<nav class='flex items-center justify-between'>
 		<div>
 			<Link aria-label='Go to Home Page.' href={home}>
-				<img alt='logo' src='/favicons/android-chrome-192x192.png' />
+				<img
+					alt='logo'
+					class='h-10 w-10'
+					src='/favicons/android-chrome-192x192.png'
+				/>
 			</Link>
 		</div>
 		<List
@@ -77,12 +81,7 @@ const CONSTANTS = [
 			{
 				CONSTANTS.slice(0, 5).map(({ href, isExternal, label, text }) => (
 					<ListItem class='group transition-all duration-200 ease-in-out lg:hover:scale-105'>
-						<Link
-							aria-label={label}
-							class='group-hover:text-aura-orange'
-							href={href}
-							isExternal={isExternal}
-						>
+						<Link aria-label={label} href={href} isExternal={isExternal}>
 							{text}
 						</Link>
 					</ListItem>
@@ -94,12 +93,7 @@ const CONSTANTS = [
 			{
 				CONSTANTS.slice(5).map(({ href, isExternal, label, text }) => (
 					<ListItem class='group transition-all duration-200 ease-in-out lg:hover:scale-125'>
-						<Link
-							aria-label={label}
-							class='group-hover:font-bold group-hover:text-aura-orange'
-							href={href}
-							isExternal={isExternal}
-						>
+						<Link aria-label={label} href={href} isExternal={isExternal}>
 							{text === 'GitHub' ? (
 								<Icon alt='GitHub Icon' class='h-6 w-6' name='mdi:github' />
 							) : text === 'LinkedIn' ? (
