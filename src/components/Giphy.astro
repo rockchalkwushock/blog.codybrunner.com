@@ -1,0 +1,17 @@
+---
+export interface Props {
+	readonly giphyId: string
+}
+
+const { giphyId } = Astro.props
+---
+
+<div class='relative mb-6 h-32 w-full md:h-44'>
+	<iframe
+		allowfullscreen
+		class='giphy-embed absolute'
+		height='100%'
+		src={`https://giphy.com/embed/${giphyId}`}
+		title={`Giphy Embed: ${giphyId}`}
+		width='100%'></iframe>
+</div>

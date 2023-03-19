@@ -1,0 +1,22 @@
+---
+export interface Props {
+	readonly tweetLink: string
+}
+const { tweetLink } = Astro.props
+---
+
+<script async charset='utf-8' src='https://platform.twitter.com/widgets.js'
+></script>
+
+<div data-testid='twitter-tweet' style={{ overflow: 'auto' }}>
+	<blockquote
+		class='twitter-tweet'
+		data-align='center'
+		data-conversation='none'
+		data-theme='dark'
+	>
+		<a href={`https://twitter.com/${tweetLink}?ref_src=twsrc%5Etfw`}>
+			{typeof window !== 'undefined' && !(window as any).twttr ? 'Loading' : ''}
+		</a>
+	</blockquote>
+</div>

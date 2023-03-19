@@ -1,0 +1,20 @@
+---
+export interface Props {
+	readonly youtubeId: string
+}
+
+const { youtubeId } = Astro.props
+---
+
+<iframe
+	allowfullscreen
+	frameborder='1'
+	height='400px'
+	marginheight='0px'
+	marginwidth='0px'
+	name='myiFrame'
+	scrolling='no'
+	src={`https://www.youtube.com/embed/${youtubeId}`}
+	style='border:0px #ffffff none;'
+	title='YouTube video player'
+	width='600px'></iframe>
