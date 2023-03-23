@@ -5,7 +5,7 @@ import PostLayout from '@layouts/PostLayout.astro'
 import {
 	filterPosts,
 	isAfter,
-	isPublishedAndNotArchived,
+	isPublished,
 	sortPosts,
 } from '@utils/post'
 
@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 	let posts = await getCollection('posts')
 
 	if (import.meta.env.MODE === 'production') {
-		posts = sortPosts(filterPosts(posts, isPublishedAndNotArchived), isAfter)
+		posts = sortPosts(filterPosts(posts, isPublished), isAfter)
 	} else {
 		posts = sortPosts(posts, isAfter)
 	}
