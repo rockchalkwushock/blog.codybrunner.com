@@ -2,12 +2,7 @@
 import type { Post } from 'content/config'
 import { getCollection } from 'astro:content'
 import PostLayout from '@layouts/PostLayout.astro'
-import {
-	filterPosts,
-	isAfter,
-	isPublished,
-	sortPosts,
-} from '@utils/post'
+import { filterPosts, isAfter, isPublished, sortPosts } from '@utils/post'
 
 export async function getStaticPaths() {
 	let posts = await getCollection('posts')

@@ -18,6 +18,7 @@ import {
 	sortPosts,
 } from '@utils/post'
 import FormattedDate from '@components/FormattedDate.astro'
+import { truncate } from '@utils/string'
 
 let posts = await getCollection('posts')
 
@@ -40,19 +41,26 @@ const latestPosts = pickPosts(
 		<Section class='grid grid-cols-1 gap-6 md:grid-cols-2'>
 			<div class='col-span-2 flex flex-col space-y-6'>
 				<SubTitle>Featured Posts</SubTitle>
-				<List
-					class='w-full justify-between space-y-8 md:flex-row md:space-x-8 md:space-y-0'
-					kind='unordered'
-				>
+				<List class='grid grid-cols-1 gap-6 md:grid-cols-2' kind='unordered'>
 					{
 						featuredPosts.map(({ data: post, slug }) => (
-							<ListItem class='h-80 w-full rounded-lg bg-gradient-to-tr from-aura-blue/50 to-aura-purple p-4 lg:transition-all lg:duration-200 lg:ease-in-out lg:hover:scale-105 lg:hover:from-aura-pink/50 lg:hover:to-aura-purple lg:hover:delay-75'>
-								<SubTitle class='text-aura-white' heading='h3'>
-									<Link href={slug}>{post.title}</Link>
-								</SubTitle>
-								<FormattedDate
-									date={post.updatedAt ?? post.publishedAt ?? post.createdAt}
-								/>
+							<ListItem class='h-72 rounded-lg bg-gradient-to-r from-aura-blue via-aura-purple to-aura-orange p-0.5'>
+								<div class='flex h-full w-full flex-col space-y-2 rounded-lg bg-aura-black p-4'>
+									<div class='flex flex-col'>
+										<SubTitle heading='h3'>
+											<Link class='!text-aura-white/70' href={slug}>
+												{post.title}
+											</Link>
+										</SubTitle>
+										<FormattedDate
+											class='!text-aura-gray'
+											date={
+												post.updatedAt ?? post.publishedAt ?? post.createdAt
+											}
+										/>
+									</div>
+									<p class='text-aura-gray'>{truncate(post.description)}</p>
+								</div>
 							</ListItem>
 						))
 					}
@@ -76,7 +84,7 @@ const latestPosts = pickPosts(
 				<List class='space-y-6' kind='unordered'>
 					{
 						latestPosts.map(({ data: post, slug }) => (
-							<ListItem class='flex flex-col items-start justify-between space-y-3 rounded-lg bg-gradient-to-tr from-aura-blue/50 to-aura-purple p-3 md:flex-row md:items-center md:space-y-0 lg:transition-all lg:duration-200 lg:ease-in-out lg:hover:scale-105 lg:hover:from-aura-pink/50 lg:hover:to-aura-purple lg:hover:delay-75'>
+							<ListItem class=''>
 								<SubTitle class='text-aura-white' heading='h4'>
 									<Link href={slug}>{post.title}</Link>
 								</SubTitle>
