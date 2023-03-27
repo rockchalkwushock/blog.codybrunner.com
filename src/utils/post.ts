@@ -1,5 +1,38 @@
 import type { CategoryEnum, Post, TagEnum } from '../content/config'
 
+type ArchivedMap = Record<
+	string,
+	{
+		count: number
+		posts: Post[]
+	}
+>
+
+export function createArchivedMap(posts: Post[]): ArchivedMap {
+	return posts.reduce<ArchivedMap>((acc, post) => {
+		const year = new Date(
+			post.data.publishedAt ?? post.data.createdAt
+		).getFullYear()
+
+		if (!Object.keys(acc).includes(String(year))) {
+			acc[year] = {
+				count: 1,
+				posts: [post],
+			}
+			return acc
+		}
+
+		if (Object.keys(acc).includes(String(year))) {
+			acc[year] = {
+				count: (acc[year]?.count as number) + 1,
+				posts: [...(acc[year]?.posts as Post[]), post].sort(isBefore),
+			}
+		}
+
+		return acc
+	}, {})
+}
+
 export function filterPosts(
 	posts: Post[],
 	cb: (post: Post) => boolean
