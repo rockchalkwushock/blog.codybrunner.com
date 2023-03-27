@@ -14,3 +14,9 @@ export const parseOddBalls = (str: string): string => {
 	if (oddBalls.includes(str)) return str.toUpperCase()
 	return str
 }
+
+export function truncate(str: string): string {
+	return str.length >= 140
+		? str.split(/\W/g).slice(0, 40).join(' ') + '...'
+		: str
+}
