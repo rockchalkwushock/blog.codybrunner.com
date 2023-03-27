@@ -3,6 +3,7 @@ import type { Page } from 'astro'
 import type { Post } from 'content/config'
 // Components
 import BaseLayout from '@layouts/BaseLayout.astro'
+import FormattedDate from '@components/FormattedDate.astro'
 import Head from '@components/Head.astro'
 import Link from '@components/Link.astro'
 import List from '@components/List.astro'
@@ -10,7 +11,8 @@ import ListItem from '@components/ListItem.astro'
 import Main from '@components/Main.astro'
 import Pagination from '@components/Pagination.astro'
 import Section from '@components/Section.astro'
-
+import SubTitle from '@components/SubTitle.astro'
+import { truncate } from '@utils/string'
 export interface Props {
 	readonly description: string
 	readonly page: Page<Post>
@@ -30,11 +32,22 @@ const { page } = Astro.props
 				kind='unordered'
 			>
 				{
-					page.data.map(p => (
-						<ListItem class='rounded-lg border border-solid p-4'>
-							<Link aria-label={`Link to ${p.data.title}`} href={`/${p.slug}`}>
-								{p.data.title}
-							</Link>
+					page.data.map(({ data: post, slug }) => (
+						<ListItem class='h-72 rounded-lg bg-gradient-to-r from-aura-blue via-aura-purple to-aura-orange p-0.5'>
+							<div class='flex h-full w-full flex-col space-y-2 rounded-lg bg-aura-black p-4'>
+								<div class='flex flex-col'>
+									<SubTitle heading='h3'>
+										<Link class='!text-aura-white/70' href={slug}>
+											{post.title}
+										</Link>
+									</SubTitle>
+									<FormattedDate
+										class='!text-aura-gray'
+										date={post.updatedAt ?? post.publishedAt ?? post.createdAt}
+									/>
+								</div>
+								<p class='text-aura-gray'>{truncate(post.description)}</p>
+							</div>
 						</ListItem>
 					))
 				}

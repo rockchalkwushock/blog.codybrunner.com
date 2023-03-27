@@ -13,11 +13,12 @@ const { page } = Astro.props
 ---
 
 <Section
-	class='w-full flex-[0_0_40px] flex-row justify-between border border-solid md:mx-auto'
+	class='w-full flex-[0_0_40px] flex-row justify-between md:mx-auto'
 >
 	<Link
 		aria-label='Link to previous page'
 		aria-disabled={!page.url.prev}
+		class="rounded-md border border-solid border-transparent bg-aura-purple py-1 px-2"
 		href={page.url.prev}
 		isDisabled={!page.url.prev}
 	>
@@ -29,6 +30,7 @@ const { page } = Astro.props
 	<Link
 		aria-label='Link to next page'
 		aria-disabled={!page.url.next}
+		class="rounded-md border border-solid border-transparent bg-aura-purple py-1 px-2"
 		href={page.url.next}
 		isDisabled={!page.url.next}
 	>
