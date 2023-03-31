@@ -17,6 +17,14 @@ tags:
 title: Up & Running With iTerm & Zsh
 ---
 
+import image from '../../../../assets/images/2017/up-and-running-with-iterm-and-zsh/in_vscode.png'
+import imageTwo from '../../../../assets/images/2017/up-and-running-with-iterm-and-zsh/term_left_side.png'
+import imageThree from '../../../../assets/images/2017/up-and-running-with-iterm-and-zsh/term_right_side.png'
+import imageFour from '../../../../assets/images/2017/up-and-running-with-iterm-and-zsh/term_left_side_2.png'
+import imageFive from '../../../../assets/images/2017/up-and-running-with-iterm-and-zsh/term_left_side_3.png'
+import imageSix from '../../../../assets/images/2017/up-and-running-with-iterm-and-zsh/term_left_side_4.png'
+import imageSeven from '../../../../assets/images/2017/up-and-running-with-iterm-and-zsh/term_left_side_5.png'
+
 import Signature from '@components/Signature.astro'
 
 # {frontmatter.title}
@@ -151,13 +159,50 @@ I found that the font I was using with iTerm2 would not work correctly in vscode
 
 ## Screen shots
 
-![home icon](/images/2017/up-and-running-with-iterm-and-zsh/term_left_side_5.png)
-![info](/images/2017/up-and-running-with-iterm-and-zsh/term_right_side.png)
-![clean](/images/2017/up-and-running-with-iterm-and-zsh/term_left_side.png)
-![dirty](/images/2017/up-and-running-with-iterm-and-zsh/term_left_side_2.png)
-![staged](/images/2017/up-and-running-with-iterm-and-zsh/term_left_side_3.png)
-![clean & ahead](/images/2017/up-and-running-with-iterm-and-zsh/term_left_side_4.png)
-![in vscode](/images/2017/up-and-running-with-iterm-and-zsh/in_vscode.png)
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Terminal Prompt 1' src={imageSeven} />
+	<small class='text-aura-gray'>
+		Left side of terminal prompt from home directory.
+	</small>
+</div>
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Terminal Prompt 2' src={imageTwo} />
+	<small class='text-aura-gray'>
+		Left side of terminal prompt with git branch.
+	</small>
+</div>
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Terminal Prompt 3' src={imageThree} />
+	<small class='text-aura-gray'>
+		Right side of terminal prompt with NodeJS version, Yarn version, time and
+		date.
+	</small>
+</div>
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Terminal Prompt 4' src={imageFour} />
+	<small class='text-aura-gray'>
+		Left side of terminal prompt showing dirty git tree.
+	</small>
+</div>
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Favicon' src={imageFive} />
+	<small class='text-aura-gray'>
+		Left side of terminal prompt showing tracked files in git tree.
+	</small>
+</div>
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Terminal Prompt 5' src={imageSix} />
+	<small class='text-aura-gray'>
+		Left side of terminal prompt showing clean git state with commit difference
+		from upstream.
+	</small>
+</div>
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Terminal Prompt in VSCode' src={image} />
+	<small class='text-aura-gray'>
+		Terminal theme applied to VSCode terminal.
+	</small>
+</div>
 
 ## Wrap Up
 

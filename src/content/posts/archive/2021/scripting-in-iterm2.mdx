@@ -8,6 +8,9 @@ createdAt: 08/24/2021
 description: How to use the Python Scripting API in iTerm2 to open several tabs and execute commands in those tabs.
 draft: false
 featured: false
+heroImage:
+  alt: Photo by SVGPorn
+  src: https://cdn.svgporn.com/logos/python.svg
 language: 'en'
 publishedAt: 08/28/2021
 tags:
@@ -18,6 +21,8 @@ tags:
 title: Python Scripting In iTerm2
 ---
 
+import image from '../../../../assets/images/2021/scripting-in-iterm2/prompt-1.png'
+import imageTwo from '../../../../assets/images/2021/scripting-in-iterm2/prompt-2.png'
 import Signature from '@components/Signature.astro'
 
 # {frontmatter.title}
@@ -34,9 +39,15 @@ iTerm makes this pretty easy at the beginning simply go to:
 
 You will be presented with two prompts and you will want to chose "Basic" and then "Simple" for what we are trying to achieve today. You can get hella fancy on your own time.
 
-![Prompt 1](/images/2021/scripting-in-iterm2/prompt-1.png)
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Prompt One' class='h-96' src={image} />
+	<small class='text-aura-gray'>First Prompt</small>
+</div>
 
-![Prompt 2](/images/2021/scripting-in-iterm2/prompt-2.png)
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Prompt Two' class='h-96' src={imageTwo} />
+	<small class='text-aura-gray'>Second Prompt</small>
+</div>
 
 ## Into Python Land
 

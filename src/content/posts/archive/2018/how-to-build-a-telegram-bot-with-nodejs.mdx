@@ -8,6 +8,9 @@ createdAt: 02/11/2018
 description: My experience in building a bot for the popular Telegram Messenger Platform.
 draft: false
 featured: false
+heroImage:
+  alt: Photo by SVGPorn
+  src: https://cdn.svgporn.com/logos/nodejs.svg
 language: 'en'
 publishedAt: 02/11/2018
 tags:
@@ -16,6 +19,9 @@ tags:
 title: How to build a Telegram Bot with NodeJS
 ---
 
+import image from '../../../../assets/images/2018/how-to-build-a-telegram-bot-with-node-js/info.png'
+import imageTwo from '../../../../assets/images/2018/how-to-build-a-telegram-bot-with-node-js/start_command.png'
+import imageThree from '../../../../assets/images/2018/how-to-build-a-telegram-bot-with-node-js/tell_me_a_joke.png'
 import Signature from '@components/Signature.astro'
 
 # {frontmatter.title}
@@ -129,7 +135,10 @@ app.command('start', ({ botInfo, replyWithMarkdown, update }) =>
 )
 ```
 
-![start_interaction](/images/2018/how-to-build-a-telegram-bot-with-node-js/start_command.png)
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Start Interaction with the bot.' class='h-96' src={imageTwo} />
+	<small class='text-aura-gray'>Get started talking with Chuck.</small>
+</div>
 
 ## Listening for the user's response
 
@@ -142,13 +151,19 @@ app.hears('Tell me something funny Chuck', async ({ replyWithMarkdown }) => {
 })
 ```
 
-![joke_time](/images/2018/how-to-build-a-telegram-bot-with-node-js/tell_me_a_joke.png)
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Joke Time!' class='h-96' src={imageThree} />
+	<small class='text-aura-gray'>Tell me a joke Chuck!</small>
+</div>
 
 ## Adding information about your bot
 
 Through @BotFather we can use commands to add information about our bot such as `/setdescription`, `/setabouttext`, `/setuserpic`, etc.
 
-![bot_info](/images/2018/how-to-build-a-telegram-bot-with-node-js/info.png)
+<div class='flex flex-col items-center justify-center bg-aura-black'>
+	<img alt='Information about the bot.' class='h-96' src={image} />
+	<small class='text-aura-gray'>Screen with all the info about Chuck.</small>
+</div>
 
 ## Deploying the bot
 
