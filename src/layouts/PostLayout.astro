@@ -87,19 +87,36 @@ const { Content, remarkPluginFrontmatter } = await render()
 							</span>
 						</div>
 					) : (
-						<div class='flex h-full w-full flex-col items-center space-y-2'>
+						<div class='flex h-full w-full flex-col items-center space-y-2 px-6'>
 							<div class='flex flex-1 items-center justify-center'>
-								<h1 class='text-center text-3xl lg:text-4xl'>{post.title}</h1>
+								<h1
+									class={twMerge(
+										'text-center text-3xl font-semibold text-aura-white lg:text-4xl',
+										post.heroImage ? 'rounded-lg bg-aura-black p-2 ' : undefined
+									)}
+								>
+									{post.title}
+								</h1>
 							</div>
-							<div class='flex w-full flex-col space-y-1 pb-6 text-aura-gray md:flex-row md:space-y-0 md:px-6'>
-								<div class='flex w-full items-center justify-center space-x-2 md:justify-start'>
+							<div class='flex w-full flex-col justify-between space-y-1 pb-6 text-aura-white md:flex-row md:space-y-0'>
+								<div
+									class={twMerge(
+										'flex items-center justify-center space-x-2 md:justify-start',
+										post.heroImage ? 'rounded-lg bg-aura-black px-2' : undefined
+									)}
+								>
 									<span>{post.author}</span>
 									<span>/</span>
 									<FormattedDate
 										date={post.updatedAt || post.publishedAt || post.createdAt}
 									/>
 								</div>
-								<div class='flex w-full items-center justify-center space-x-2 md:justify-end'>
+								<div
+									class={twMerge(
+										'flex items-center justify-center space-x-2 md:justify-end',
+										post.heroImage ? 'rounded-lg bg-aura-black px-2' : undefined
+									)}
+								>
 									<span>{remarkPluginFrontmatter.readingTime}</span>
 									<span>/</span>
 									<div class='flex items-center space-x-2'>
@@ -166,7 +183,16 @@ const { Content, remarkPluginFrontmatter } = await render()
 		<article class='prose prose-lg prose-invert max-w-none'>
 			<Content />
 		</article>
-		<Section class='flex-row items-center justify-between'>
+		<Section
+			class={twMerge(
+				'flex-row items-center',
+				next !== undefined && prev !== undefined
+					? 'justify-between'
+					: next !== undefined && prev === undefined
+					? 'justify-end'
+					: 'justify-start'
+			)}
+		>
 			{
 				prev && (
 					<Link
