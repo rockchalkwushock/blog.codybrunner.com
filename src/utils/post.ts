@@ -197,3 +197,30 @@ export const isPublishedAndNotArchived = (post: Post): boolean =>
 	typeof post.data.publishedAt !== 'undefined' &&
 	!post.data.archived &&
 	!post.data.draft
+
+export function getRelatedPosts(
+	currentPost: Pick<Post, 'data' | 'slug'>,
+	posts: Post[],
+	quantity = 3
+): Post[] {
+	let relatedPosts: Post[] = []
+
+	if (typeof currentPost.data.tags !== 'undefined') {
+		// Find related posts
+		relatedPosts = posts
+			.filter(({ data: { tags } }) => {
+				if (typeof tags !== 'undefined') {
+					return tags.some(tag => currentPost.data.tags?.includes(tag))
+				}
+
+				return false
+			})
+			// Remove the current post from the list of related posts
+			.filter(p => p.slug !== currentPost.slug)
+	}
+
+	// Return an array of related posts with a maximum length of `quantity`
+	return relatedPosts.length > quantity
+		? relatedPosts.slice(0, quantity)
+		: relatedPosts
+}

@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content'
 import type { Post } from 'content/config'
 import Icon from 'astro-icon'
 import { twMerge } from 'tailwind-merge'
@@ -13,6 +14,14 @@ import ListItem from '@components/ListItem.astro'
 import Main from '@components/Main.astro'
 import Section from '@components/Section.astro'
 import TagLink from '@components/TagLink.astro'
+import {
+	filterPosts,
+	getRelatedPosts,
+	isAfter,
+	isPublished,
+	sortPosts,
+} from '@utils/post'
+import SubTitle from '@components/SubTitle.astro'
 
 export interface Props {
 	next: Post | undefined
@@ -22,10 +31,27 @@ export interface Props {
 
 const {
 	next,
-	post: { data: post, render },
+	post: { data: post, render, slug },
 	prev,
 } = Astro.props
 const { Content, remarkPluginFrontmatter } = await render()
+
+let posts = await getCollection('posts')
+
+if (import.meta.env.MODE === 'production') {
+	posts = sortPosts(filterPosts(posts, isPublished), isAfter)
+} else {
+	posts = sortPosts(posts, isAfter)
+}
+
+const relatedPosts = getRelatedPosts(
+	{
+		data: post,
+		slug,
+	},
+	posts,
+	5
+)
 ---
 
 <BaseLayout>
@@ -98,27 +124,27 @@ const { Content, remarkPluginFrontmatter } = await render()
 									{post.title}
 								</h1>
 							</div>
-							<div class='flex w-full flex-col justify-between space-y-1 pb-6 text-aura-white md:flex-row md:space-y-0'>
+							<div class='flex w-full justify-between pb-6 text-aura-white'>
 								<div
 									class={twMerge(
-										'flex items-center justify-center space-x-2 md:justify-start',
+										'flex flex-col sm:flex-row items-center justify-center sm:space-x-2 sm:justify-start',
 										post.heroImage ? 'rounded-lg bg-aura-black px-2' : undefined
 									)}
 								>
 									<span>{post.author}</span>
-									<span>/</span>
+									<span class='hidden sm:block'>/</span>
 									<FormattedDate
 										date={post.updatedAt || post.publishedAt || post.createdAt}
 									/>
 								</div>
 								<div
 									class={twMerge(
-										'flex items-center justify-center space-x-2 md:justify-end',
+										'flex flex-col sm:flex-row items-center justify-center sm:space-x-2 sm:justify-end',
 										post.heroImage ? 'rounded-lg bg-aura-black px-2' : undefined
 									)}
 								>
 									<span>{remarkPluginFrontmatter.readingTime}</span>
-									<span>/</span>
+									<span class='hidden sm:block'>/</span>
 									<div class='flex items-center space-x-2'>
 										<Icon class='h-5 w-5' name='mdi:eye-outline' />
 										<span>10.000</span>
@@ -214,5 +240,31 @@ const { Content, remarkPluginFrontmatter } = await render()
 				)
 			}
 		</Section>
+		{
+			relatedPosts && relatedPosts.length > 0 && (
+				<Section>
+					<SubTitle class='mb-4' heading='h2'>
+						Related Posts
+					</SubTitle>
+					<List class='space-y-4' kind='unordered'>
+						{relatedPosts.map(post => (
+							<ListItem class='flex rounded-lg bg-gradient-to-r from-aura-blue via-aura-purple to-aura-orange p-0.5'>
+								<div class='flex flex-1 flex-col space-y-2 rounded-lg bg-aura-black p-4'>
+									<SubTitle heading='h4'>
+										<Link class='!text-aura-white/80' href={`/${post.slug}`}>
+											{post.data.title}
+										</Link>
+									</SubTitle>
+									<FormattedDate
+										class='!text-aura-gray'
+										date={post.data.publishedAt ?? post.data.createdAt}
+									/>
+								</div>
+							</ListItem>
+						))}
+					</List>
+				</Section>
+			)
+		}
 	</Main>
 </BaseLayout>
