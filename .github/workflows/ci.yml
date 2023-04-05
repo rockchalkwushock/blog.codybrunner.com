@@ -38,10 +38,10 @@ jobs:
           cache: "pnpm"
           node-version: ${{ matrix.node-version }}
 
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run build
         env:
           NODE_ENV: production
-      - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
       # FIXME: Temporarily disabled until we fix all type errors
       # - run: pnpm run type-check
