@@ -1,0 +1,39 @@
+---
+import type { GetStaticPathsOptions, Page } from 'astro'
+import type { Post } from 'content/config'
+import { getCollection } from 'astro:content'
+import { PAGE_SIZE } from '@config'
+import {
+	filterPosts,
+	isAfter,
+	isPublishedAndNotArchived,
+	sortPosts,
+} from '@utils/post'
+import PaginatedLayout from '@layouts/PaginatedLayout.astro'
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+	let posts = await getCollection('posts')
+
+	if (import.meta.env.MODE === 'production') {
+		posts = sortPosts(filterPosts(posts, isPublishedAndNotArchived), isAfter)
+	} else {
+		posts = sortPosts(posts, isAfter)
+	}
+
+	return paginate(posts, {
+		pageSize: PAGE_SIZE,
+	})
+}
+
+export interface Props {
+	readonly page: Page<Post>
+}
+
+const { page } = Astro.props
+---
+
+<PaginatedLayout
+	description={`Page ${page.currentPage} of the latest posts on blog.codybrunner.com`}
+	page={page}
+	title={`Page ${page.currentPage}`}
+/>

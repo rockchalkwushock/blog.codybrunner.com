@@ -1,11 +1,101 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro'
+import { getCollection } from 'astro:content'
+// Components
 import Head from '@components/Head.astro'
+import Link from '@components/Link.astro'
+import List from '@components/List.astro'
+import ListItem from '@components/ListItem.astro'
+import Main from '@components/Main.astro'
+import Section from '@components/Section.astro'
+import SubTitle from '@components/SubTitle.astro'
+import BaseLayout from '@layouts/BaseLayout.astro'
+import {
+	filterPosts,
+	isAfter,
+	isFeatured,
+	isPublishedAndNotArchived,
+	pickPosts,
+	sortPosts,
+} from '@utils/post'
+import FormattedDate from '@components/FormattedDate.astro'
+import { truncate } from '@utils/string'
+
+let posts = await getCollection('posts')
+
+if (import.meta.env.MODE === 'production') {
+	posts = sortPosts(filterPosts(posts, isPublishedAndNotArchived), isAfter)
+} else {
+	posts = sortPosts(posts, isAfter)
+}
+
+const featuredPosts = filterPosts(posts, isFeatured)
+const latestPosts = pickPosts(
+	filterPosts(posts, post => !isFeatured(post)),
+	6
+)
 ---
 
 <BaseLayout>
 	<Head slot='metadata' />
-	<main slot='content'>
-		<h1 class="text-5xl">Astro</h1>
-	</main>
+	<Main class='space-y-8' slot='content'>
+		<Section class='grid grid-cols-1 gap-6 md:grid-cols-2'>
+			<div class='col-span-2 flex flex-col space-y-6'>
+				<SubTitle>Featured Posts</SubTitle>
+				<List class='grid grid-cols-1 gap-6 md:grid-cols-2' kind='unordered'>
+					{
+						featuredPosts.map(({ data: post, slug }) => (
+							<ListItem class='h-72 rounded-lg bg-gradient-to-r from-aura-blue via-aura-purple to-aura-orange p-0.5'>
+								<div class='flex h-full w-full flex-col space-y-2 rounded-lg bg-aura-black p-4'>
+									<div class='flex flex-col'>
+										<SubTitle heading='h3'>
+											<Link class='!text-aura-white/70' href={slug}>
+												{post.title}
+											</Link>
+										</SubTitle>
+										<FormattedDate
+											class='!text-aura-gray'
+											date={
+												post.updatedAt ?? post.publishedAt ?? post.createdAt
+											}
+										/>
+									</div>
+									<p class='text-aura-gray'>{truncate(post.description)}</p>
+								</div>
+							</ListItem>
+						))
+					}
+				</List>
+			</div>
+			<div class='col-span-2 flex flex-col space-y-6'>
+				<div
+					class='flex flex-col items-center space-y-4 md:flex-row md:justify-between md:space-y-0'
+				>
+					<SubTitle>Latest Posts</SubTitle>
+					<div class='flex items-center space-x-2'>
+						<Link aria-label='Link to more blog posts' href='/1'>
+							View More
+						</Link>
+						<span>|</span>
+						<Link aria-label='Link to archived blog posts' href='/archive'>
+							View Archive
+						</Link>
+					</div>
+				</div>
+				<List class='space-y-6' kind='unordered'>
+					{
+						latestPosts.map(({ data: post, slug }) => (
+							<ListItem class=''>
+								<SubTitle class='text-aura-white' heading='h4'>
+									<Link href={slug}>{post.title}</Link>
+								</SubTitle>
+								<FormattedDate
+									date={post.updatedAt ?? post.publishedAt ?? post.createdAt}
+								/>
+							</ListItem>
+						))
+					}
+				</List>
+			</div>
+		</Section>
+	</Main>
 </BaseLayout>

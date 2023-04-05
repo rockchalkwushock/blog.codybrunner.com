@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import { twMerge } from 'tailwind-merge'
+export interface Props extends HTMLAttributes<'time'> {
+	readonly date: Date
+	readonly format?: 'short' | 'medium' | 'long'
+}
+
+const BASE_STYLES = ['']
+
+const formatMap: Record<
+	'short' | 'medium' | 'long',
+	Intl.DateTimeFormatOptions
+> = {
+	short: { day: '2-digit', month: '2-digit', year: 'numeric' },
+	medium: { day: 'numeric', month: 'short', year: 'numeric' },
+	long: { day: 'numeric', month: 'long', year: 'numeric' },
+}
+
+const { class: cls, date, format = 'medium', ...rest } = Astro.props
+
+const { locale } = new Intl.DateTimeFormat().resolvedOptions()
+
+const formattedDate = new Intl.DateTimeFormat(locale, formatMap[format]).format(
+	date
+)
+
+const styles = twMerge(BASE_STYLES, cls)
+---
+
+<time {...rest} class={styles} datetime={date.toISOString()}
+	>{formattedDate}</time
+>

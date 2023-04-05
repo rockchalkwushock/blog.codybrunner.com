@@ -1,0 +1,35 @@
+---
+import type { Post } from 'content/config'
+import { getCollection } from 'astro:content'
+import PostLayout from '@layouts/PostLayout.astro'
+import { filterPosts, isAfter, isPublished, sortPosts } from '@utils/post'
+
+export async function getStaticPaths() {
+	let posts = await getCollection('posts')
+
+	if (import.meta.env.MODE === 'production') {
+		posts = sortPosts(filterPosts(posts, isPublished), isAfter)
+	} else {
+		posts = sortPosts(posts, isAfter)
+	}
+
+	return posts.map((post, idx) => ({
+		params: { slug: post.slug },
+		props: {
+			next: posts.length === idx + 1 ? undefined : posts[idx + 1],
+			post,
+			prev: idx === 0 ? undefined : posts[idx - 1],
+		},
+	}))
+}
+
+interface Props {
+	readonly next?: Post
+	readonly post: Post
+	readonly prev?: Post
+}
+
+const { next, post, prev } = Astro.props
+---
+
+<PostLayout next={next} post={post} prev={prev} />

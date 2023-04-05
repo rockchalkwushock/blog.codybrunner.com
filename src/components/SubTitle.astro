@@ -1,0 +1,61 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import { twMerge } from 'tailwind-merge'
+
+export interface Props extends HTMLAttributes<'h1'> {
+	heading?: 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+}
+
+const BASE_STYLES = ['text-aura-purple', 'font-bold', 'text-3xl']
+
+const { class: cls, heading = 'h2', ...rest } = Astro.props
+const styles = twMerge(
+	BASE_STYLES,
+	cls,
+	heading === 'h3'
+		? 'text-2xl'
+		: heading === 'h4'
+		? 'text-xl'
+		: heading === 'h5'
+		? 'text-xl'
+		: heading === 'h6'
+		? 'text-lg'
+		: undefined
+)
+---
+
+{
+	heading === 'h2' && (
+		<h2 {...rest} class={styles}>
+			<slot />
+		</h2>
+	)
+}
+{
+	heading === 'h3' && (
+		<h3 {...rest} class={styles}>
+			<slot />
+		</h3>
+	)
+}
+{
+	heading === 'h4' && (
+		<h4 {...rest} class={styles}>
+			<slot />
+		</h4>
+	)
+}
+{
+	heading === 'h5' && (
+		<h5 {...rest} class={styles}>
+			<slot />
+		</h5>
+	)
+}
+{
+	heading === 'h6' && (
+		<h6 {...rest} class={styles}>
+			<slot />
+		</h6>
+	)
+}

@@ -1,0 +1,22 @@
+---
+import type { TagEnum } from 'content/config'
+import Icon from 'astro-icon'
+import Link from './Link.astro'
+
+export interface Props {
+	readonly tag: TagEnum
+}
+
+const { tag } = Astro.props
+---
+
+<Link
+	aria-label={`Link to posts in with ${tag} tag.`}
+	class='flex items-center space-x-1'
+	href={`/tags/${tag}`}
+>
+	<Icon aria-label='Tag Icon' class='h-4 w-4' name='mdi:tag' />
+	<span>
+		<slot />
+	</span>
+</Link>

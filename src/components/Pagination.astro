@@ -1,0 +1,37 @@
+---
+import type { Page } from 'astro'
+import type { CollectionEntry } from 'astro:content'
+// Components
+import Link from './Link.astro'
+import Section from './Section.astro'
+
+export interface Props {
+	readonly page: Page<CollectionEntry<'posts'>>
+}
+
+const { page } = Astro.props
+---
+
+<Section class='w-full flex-[0_0_40px] flex-row justify-between md:mx-auto'>
+	<Link
+		aria-label='Link to previous page'
+		aria-disabled={!page.url.prev}
+		class='rounded-md border border-solid border-transparent bg-aura-purple py-1 px-2'
+		href={page.url.prev}
+		isDisabled={!page.url.prev}
+	>
+		Previous
+	</Link>
+	<span>
+		{page.currentPage} of {page.lastPage}
+	</span>
+	<Link
+		aria-label='Link to next page'
+		aria-disabled={!page.url.next}
+		class='rounded-md border border-solid border-transparent bg-aura-purple py-1 px-2'
+		href={page.url.next}
+		isDisabled={!page.url.next}
+	>
+		Next
+	</Link>
+</Section>

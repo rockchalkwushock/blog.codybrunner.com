@@ -1,0 +1,54 @@
+---
+import BaseLayout from './BaseLayout.astro'
+import Head from '@components/Head.astro'
+import Link from '@components/Link.astro'
+import List from '@components/List.astro'
+import ListItem from '@components/ListItem.astro'
+import Main from '@components/Main.astro'
+import Section from '@components/Section.astro'
+import Title from '@components/Title.astro'
+import type { CategoryEnum, TagEnum } from 'content/config'
+import { capitalizeJS, parseOddBalls, toCapitalize } from '@utils/string'
+
+export interface Props {
+	readonly countMap: Record<string, number>
+	readonly description: string
+	readonly kind: 'category' | 'tag'
+	readonly taxonomies: CategoryEnum[] | TagEnum[]
+	readonly title: string
+}
+
+const { countMap, description, kind, taxonomies, title } = Astro.props
+---
+
+<BaseLayout>
+	<Head description={description} slot='metadata' title={title} />
+	<Main slot='content'>
+		<Title>{kind === 'category' ? 'Categories' : 'Tags'}</Title>
+		<Section>
+			<List kind='unordered'>
+				{
+					kind === 'category' &&
+						taxonomies.map(category => (
+							<ListItem>
+								<Link href={`/categories/${category.toLowerCase()}`}>
+									{toCapitalize(category)} ({countMap[category]})
+								</Link>
+							</ListItem>
+						))
+				}
+				{
+					kind === 'tag' &&
+						taxonomies.map(tag => (
+							<ListItem>
+								<Link href={`/tags/${tag.toLowerCase()}`}>
+									{capitalizeJS(toCapitalize(parseOddBalls(tag)))} (
+									{countMap[tag]})
+								</Link>
+							</ListItem>
+						))
+				}
+			</List>
+		</Section>
+	</Main>
+</BaseLayout>

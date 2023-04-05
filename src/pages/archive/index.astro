@@ -1,0 +1,48 @@
+---
+import { getCollection } from "astro:content";
+// Components
+import BaseLayout from "@layouts/BaseLayout.astro";
+import FormattedDate from "@components/FormattedDate.astro";
+import Head from "@components/Head.astro";
+import Link from "@components/Link.astro";
+import List from "@components/List.astro";
+import ListItem from "@components/ListItem.astro";
+import Main from "@components/Main.astro";
+import Section from "@components/Section.astro";
+import Title from "@components/Title.astro";
+import { createArchivedMap, filterPosts, isArchived } from "@utils/post";
+import SubTitle from "@components/SubTitle.astro";
+
+const posts = await getCollection("posts");
+
+const archiveMap = createArchivedMap(filterPosts(posts, isArchived))
+---
+
+<BaseLayout>
+  <Head slot="metadata" />
+  <Main slot="content">
+    <Title>Archived Posts</Title>
+    <Section class="space-y-8">
+      {Object.keys(archiveMap).map((year) => (
+        <>
+        <div class="flex flex-col space-y-4">
+          <div class="flex items-center justify-between">
+            <SubTitle heading="h3">{year}</SubTitle>
+            <span class="rounded-full bg-aura-purple py-2 px-4">{archiveMap[year]!.count}</span>
+          </div>
+          <List class="space-y-3" kind="unordered">
+            {archiveMap[year]?.posts.map(({data: post, slug }) => (
+              <ListItem class="flex items-center justify-between">
+                <Link href={slug}>{post.title}</Link>
+                <FormattedDate date={post.updatedAt ?? post.publishedAt ?? post.createdAt} format="long" />
+              </ListItem>
+            ))}
+          </List>
+        </div>
+        <hr class="last:hidden" />
+        </>
+      ))}
+    </Section>
+  </Main>
+</BaseLayout>
+

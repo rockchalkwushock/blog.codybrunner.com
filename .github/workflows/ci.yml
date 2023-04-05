@@ -17,7 +17,7 @@ jobs:
       fail-fast: true
       matrix:
         node-version: [18.x]
-        pnpm-version: [7.29.0]
+        pnpm-version: [7.x]
     timeout-minutes: 15
 
     steps:
@@ -39,10 +39,12 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run lint
-      # FIXME: Temporarily disabled until we fix all type errors
-      # - run: pnpm run type-check
-
+      # NOTE: We need to run the build step before linting and type-checking
+      # so that the typings from .astro/ will be available when those scripts run
+      # otherwise they will fail.
       - run: pnpm run build
         env:
           NODE_ENV: production
+      - run: pnpm run lint
+      # FIXME: Temporarily disabled until we fix all type errors
+      # - run: pnpm run type-check

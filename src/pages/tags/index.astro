@@ -1,0 +1,30 @@
+---
+import type { TagEnum } from 'content/config';
+import { getCollection } from 'astro:content'
+import { filterPosts, getTagCount, isPublished } from '@utils/post';
+// Components
+import TaxonomyListLayout from '@layouts/TaxonomyListLayout.astro';
+
+const CONSTANTS = {
+  description: 'List of tags of posts present in my blog.',
+  title: 'Tags',
+}
+
+let posts = await getCollection('posts')
+if (import.meta.env.MODE === 'production') {
+  posts = filterPosts(posts, isPublished)
+}
+
+const tagCountMap = getTagCount(posts)
+
+const tags = [...new Set(posts.map(post => post.data.tags).flat())].filter(tag => typeof tag !== 'undefined').sort()
+---
+
+<TaxonomyListLayout
+  countMap={tagCountMap}
+  description={CONSTANTS.description}
+  kind="tag"
+  taxonomies={tags as TagEnum[]}
+  title={CONSTANTS.title}
+/>
+

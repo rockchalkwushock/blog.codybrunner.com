@@ -70,7 +70,7 @@ module.exports = {
 			removeDuplicates: true,
 			skipClassAttribute: false,
 			tags: [],
-			whitelist: [],
+			whitelist: ['giphy-embed', 'twitter-tweet'],
 		},
 	},
 }

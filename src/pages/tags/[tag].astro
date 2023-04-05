@@ -1,0 +1,47 @@
+---
+import type { Post, TagEnum } from "content/config"
+import { getCollection } from "astro:content";
+import { filterPosts, hasTag, isPublished } from "@utils/post";
+import { capitalizeJS, parseOddBalls, toCapitalize } from "@utils/string"
+// Components
+import TaxonomyLayout from "@layouts/TaxonomyLayout.astro";
+
+
+export async function getStaticPaths() {
+  let posts = await getCollection("posts");
+  if (import.meta.env.MODE === 'production') {
+    posts = filterPosts(posts, isPublished)
+  }
+  const tags = [
+    ...new Set(
+      posts.map(post => {
+        if (typeof post.data.tags === 'undefined') return undefined
+        return post.data.tags
+      }).flat().filter(tag => typeof tag !== 'undefined').sort()
+    )
+  ]
+
+  return tags.map((tag) => {
+    return {
+      params: { tag },
+      props: { posts: filterPosts(posts, post => hasTag(post, tag as TagEnum)) },
+    };
+  });
+}
+
+interface Props {
+  readonly posts: Post[]
+}
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+
+
+const title = tag ? capitalizeJS(toCapitalize(parseOddBalls(tag))) : 'Uncategorized'
+---
+
+<TaxonomyLayout
+  description={`List of posts with the ${tag} tag.`}
+  kind="tag"
+  posts={posts}
+  title={title}
+/>
