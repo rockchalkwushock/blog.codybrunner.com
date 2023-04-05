@@ -39,6 +39,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - run: pnpm install --frozen-lockfile
+      # NOTE: We need to run the build step before linting and type-checking
+      # so that the typings from .astro/ will be available when those scripts run
+      # otherwise they will fail.
       - run: pnpm run build
         env:
           NODE_ENV: production
