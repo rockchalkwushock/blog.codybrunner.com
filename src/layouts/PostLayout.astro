@@ -108,7 +108,7 @@ const relatedPosts = getRelatedPosts(
 				{
 					post.draft ? (
 						<div class='flex items-center space-x-2'>
-							<span class='rounded-3xl border border-transparent bg-red-500 py-1 px-1.5 font-bold uppercase text-white'>
+							<span class='rounded-3xl border border-transparent bg-red-500 px-1.5 py-1 font-bold uppercase text-white'>
 								Draft
 							</span>
 						</div>
@@ -222,7 +222,7 @@ const relatedPosts = getRelatedPosts(
 			{
 				prev && (
 					<Link
-						class='rounded-lg bg-aura-purple py-2 px-4 font-bold'
+						class='rounded-lg bg-aura-purple px-4 py-2 font-bold'
 						href={`/${prev.slug}`}
 					>
 						<Icon name='mdi:arrow-left-bold-circle' class='h-10 w-10' />
@@ -232,7 +232,7 @@ const relatedPosts = getRelatedPosts(
 			{
 				next && (
 					<Link
-						class='rounded-lg bg-aura-purple py-2 px-4 font-bold'
+						class='rounded-lg bg-aura-purple px-4 py-2 font-bold'
 						href={`/${next.slug}`}
 					>
 						<Icon name='mdi:arrow-right-bold-circle' class='h-10 w-10' />

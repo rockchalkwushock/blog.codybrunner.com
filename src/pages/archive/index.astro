@@ -28,7 +28,7 @@ const archiveMap = createArchivedMap(filterPosts(posts, isArchived))
         <div class="flex flex-col space-y-4">
           <div class="flex items-center justify-between">
             <SubTitle heading="h3">{year}</SubTitle>
-            <span class="rounded-full bg-aura-purple py-2 px-4">{archiveMap[year]!.count}</span>
+            <span class="rounded-full bg-aura-purple px-4 py-2">{archiveMap[year]!.count}</span>
           </div>
           <List class="space-y-3" kind="unordered">
             {archiveMap[year]?.posts.map(({data: post, slug }) => (
