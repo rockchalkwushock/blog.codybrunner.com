@@ -17,7 +17,7 @@ jobs:
       fail-fast: true
       matrix:
         node-version: [18.x]
-        pnpm-version: [7.x]
+        pnpm-version: [8.x]
     timeout-minutes: 15
 
     steps:
@@ -45,6 +45,5 @@ jobs:
       - run: pnpm run build
         env:
           NODE_ENV: production
-      - run: pnpm run lint
-      # FIXME: Temporarily disabled until we fix all type errors
-      # - run: pnpm run type-check
+      # lint and type-check code
+      - run: pnpm run validate

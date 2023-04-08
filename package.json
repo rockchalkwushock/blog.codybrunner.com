@@ -11,7 +11,7 @@
 	"type": "module",
 	"engines": {
 		"node": ">=18.x",
-		"pnpm": ">=7.x"
+		"pnpm": ">=8.x"
 	},
 	"scripts": {
 		"build": "astro build",
@@ -19,7 +19,8 @@
 		"format": "prettier --cache --ignore-unknown --plugin-search-dir=. --write ./src/**/*.{astro,css,ts}",
 		"lint": "eslint --cache './src/**/*.{astro,css,mdx,ts}'",
 		"preview": "astro preview",
-		"type-check": "astro check && tsc --noEmit"
+		"type-check": "astro check && tsc --noEmit",
+		"validate": "pnpm run lint && pnpm run type-check"
 	},
 	"dependencies": {
 		"@astrojs/markdown-remark": "2.1.3",
