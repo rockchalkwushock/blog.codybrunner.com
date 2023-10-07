@@ -1,7 +1,28 @@
 ---
-import BaseLayout from '~/layouts/base-layout.astro'
+import { getCollection } from 'astro:content'
+
+import Article from '~/components/article.astro'
 import Head from '~/components/head.astro'
 import SimpleLayout from '~/components/simple-layout.astro'
+import BaseLayout from '~/layouts/base-layout.astro'
+
+import {
+	filterArticles,
+	isAfter,
+	isPublishedAndNotArchived,
+	sortArticles,
+} from '~/utils/helpers'
+
+let articles = await getCollection('articles')
+
+if (import.meta.env.MODE === 'production') {
+	articles = sortArticles(
+		filterArticles(articles, isPublishedAndNotArchived),
+		isAfter
+	)
+} else {
+	articles = sortArticles(articles, isAfter)
+}
 ---
 
 <BaseLayout>
@@ -10,7 +31,13 @@ import SimpleLayout from '~/components/simple-layout.astro'
 		<div
 			class='md:border-l md:border-primary-100 md:pl-6 md:dark:border-primary-700/40'
 		>
-			<div class='flex max-w-3xl flex-col space-y-16'></div>
+			<div class='flex max-w-3xl flex-col space-y-16'>
+				{
+					articles.map(({ data: article, slug }) => (
+						<Article article={article} slug={slug} />
+					))
+				}
+			</div>
 		</div>
 	</SimpleLayout>
 </BaseLayout>
