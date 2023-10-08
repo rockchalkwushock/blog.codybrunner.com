@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config'
 import mdx from '@astrojs/mdx'
 import react from '@astrojs/react'
+import sitemap from '@astrojs/sitemap'
 import tailwind from '@astrojs/tailwind'
 // Rehype/Remark Plugins
 import { rehypeAccessibleEmojis } from 'rehype-accessible-emojis'
@@ -16,7 +17,17 @@ export default defineConfig({
 			entrypoint: 'astro/assets/services/noop',
 		},
 	},
-	integrations: [react(), tailwind(), mdx()],
+	integrations: [
+		react(),
+		tailwind(),
+		mdx(),
+		sitemap({
+			serialize(item) {
+				console.log({ item })
+				return item
+			},
+		}),
+	],
 	markdown: {
 		rehypePlugins: [
 			rehypeSlug,
