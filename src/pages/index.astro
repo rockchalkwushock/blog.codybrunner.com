@@ -3,31 +3,43 @@ import { getCollection } from 'astro:content'
 
 import Article from '~/components/article.astro'
 import Head from '~/components/head.astro'
+import Link from '~/components/link.astro'
 import SimpleLayout from '~/components/simple-layout.astro'
 import BaseLayout from '~/layouts/base-layout.astro'
 
 import {
-	filterArticles,
 	isAfter,
 	isPublishedAndNotArchived,
 	sortArticles,
 } from '~/utils/helpers'
 
-let articles = await getCollection('articles')
+let articles = await getCollection('articles', article => {
+	if (import.meta.env.MODE === 'production') {
+		return isPublishedAndNotArchived(article)
+	}
+	return true
+})
 
-if (import.meta.env.MODE === 'production') {
-	articles = sortArticles(
-		filterArticles(articles, isPublishedAndNotArchived),
-		isAfter
-	)
-} else {
-	articles = sortArticles(articles, isAfter)
-}
+articles = sortArticles(articles, isAfter)
 ---
 
 <BaseLayout>
 	<Head slot='metadata' />
-	<SimpleLayout intro='' slot='content' title=''>
+	<SimpleLayout
+		intro='Welcome to my blog where I write on software development, travel, and being and expat. Here you will find the articles I have written over the last year.'
+		slot='content'
+		title='Articles'
+	>
+		<div class='flex justify-end mb-8'>
+			<Link
+				aria-label='Go to Archive.'
+				class='bg-primary-50 flex items-center gap-2 px-3 py-2 rounded-lg scale-95 transition dark:bg-primary-800/50 hover:scale-100 hover:bg-primary-200 dark:hover:bg-primary-700'
+				href='/archive'
+			>
+				<span>Archive</span>
+				<span>→</span>
+			</Link>
+		</div>
 		<div
 			class='md:border-l md:border-primary-100 md:pl-6 md:dark:border-primary-700/40'
 		>
@@ -38,6 +50,16 @@ if (import.meta.env.MODE === 'production') {
 					))
 				}
 			</div>
+		</div>
+		<div class='flex justify-end mt-16'>
+			<Link
+				aria-label='Go to Archive.'
+				class='bg-primary-50 flex items-center gap-2 px-3 py-2 rounded-lg scale-95 transition dark:bg-primary-800/50 hover:scale-100 hover:bg-primary-200 dark:hover:bg-primary-700'
+				href='/archive'
+			>
+				<span>Archive</span>
+				<span>→</span>
+			</Link>
 		</div>
 	</SimpleLayout>
 </BaseLayout>

@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import type { Article, CategoryEnum, TagsEnum } from '~/content/config'
 
+type Articles = Article[]
+
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
@@ -40,12 +42,12 @@ export function isAfter({ data: a1 }: Article, { data: a2 }: Article): number {
 	return date1.getTime() < date2.getTime() ? 1 : -1
 }
 
-export function isArchived(article: Article): boolean {
-	return article.data.archived
+export function isArchived({ data: article }: Article): boolean {
+	return article.archived
 }
 
-export function isDraft(article: Article): boolean {
-	return article.data.draft
+export function isDraft({ data: article }: Article): boolean {
+	return article.draft
 }
 
 export function isBefore({ data: a1 }: Article, { data: a2 }: Article): number {
@@ -96,4 +98,39 @@ export function hasTag(article: Article, tag: TagsEnum): boolean {
 	return typeof article.data.tags !== 'undefined'
 		? article.data.tags.includes(tag)
 		: false
+}
+
+type ArchivedMap = Record<
+	string,
+	{
+		articles: Articles
+		count: number
+	}
+>
+
+export function createArchivedMap(articles: Articles): ArchivedMap {
+	return articles.reduce<ArchivedMap>((acc, article) => {
+		const year = new Date(
+			article.data.publishedAt ?? article.data.createdAt
+		).getFullYear()
+
+		if (!Object.keys(acc).includes(String(year))) {
+			acc[year] = {
+				count: 1,
+				articles: [article],
+			}
+			return acc
+		}
+
+		if (Object.keys(acc).includes(String(year))) {
+			acc[year] = {
+				count: (acc[year]?.count as number) + 1,
+				articles: [...(acc[year]?.articles as Articles), article].sort(
+					isBefore
+				),
+			}
+		}
+
+		return acc
+	}, {})
 }

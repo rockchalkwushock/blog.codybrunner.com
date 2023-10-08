@@ -7,3 +7,4 @@ export const collections = {
 }
 
 export type { Article, Author }
+export type { CategoryEnum, TagsEnum } from './taxonomy'

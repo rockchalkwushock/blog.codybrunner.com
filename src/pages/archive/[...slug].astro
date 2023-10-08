@@ -10,12 +10,12 @@ import Link from '~/components/link.astro'
 import type { Article } from '~/content/config'
 import BaseLayout from '~/layouts/base-layout.astro'
 import { formatDate, formatToDateTimeString } from '~/utils/strings'
-import { isAfter, isPublished, sortArticles } from '~/utils/helpers'
+import { isAfter, isArchived, isPublished, sortArticles } from '~/utils/helpers'
 
 export async function getStaticPaths() {
 	let articles = await getCollection('articles', (article) => {
 		if (import.meta.env.MODE === 'production') {
-			return isPublished(article)
+			return isPublished(article) && isArchived(article)
 		}
 
 		return true
