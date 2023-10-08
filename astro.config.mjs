@@ -10,6 +10,8 @@ import rehypeExternalLinks from 'rehype-external-links'
 import rehypeSlug from 'rehype-slug'
 import rehypePrettyCode from 'rehype-pretty-code'
 
+const currentYear = new Date().getFullYear()
+
 // https://astro.build/config
 export default defineConfig({
 	image: {
@@ -23,7 +25,31 @@ export default defineConfig({
 		mdx(),
 		sitemap({
 			serialize(item) {
-				console.log({ item })
+				if (item.url === 'https://blog.codybrunner.com/') {
+					item.changefreq = 'weekly'
+					item.lastmod = new Date().toISOString()
+					item.priority = 1.0
+					return item
+				}
+				if (item.url.includes('archive')) {
+					item.changefreq = 'yearly'
+					item.lastmod = new Date().toISOString()
+					item.priority = 0.5
+					return item
+				}
+				if (item.url.includes('categories') || item.url.includes('tags')) {
+					item.changefreq = 'monthly'
+					item.lastmod = new Date().toISOString()
+					item.priority = 0.7
+					return item
+				}
+				if (!item.url.includes(currentYear)) {
+					item.changefreq = 'never'
+					item.priority = 0.1
+					return item
+				}
+				item.changefreq = 'monthly'
+				item.priority = 0.7
 				return item
 			},
 		}),
