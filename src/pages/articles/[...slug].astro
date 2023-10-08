@@ -39,7 +39,7 @@ const { Content } = await render()
 <BaseLayout>
 	<Head
 		description={article.description}
-		image={article.coverImage ? new URL(article.coverImage.src) : undefined}
+		image={article.coverImage ? new URL(article.coverImage.src, Astro.url) : undefined}
 		imageAlt={article.coverImage ? article.coverImage.alt : undefined}
 		slot='metadata'
 		title={article.title}

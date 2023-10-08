@@ -7,15 +7,15 @@ categories:
   - personal
 coverImage:
   alt: Photo by Flavia Carpio on Unsplash
-  src: https://images.unsplash.com/photo-1533699224246-6dc3b3ed3304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3131&q=80
+  src: ./colombia.avif
 createdAt: 09/01/2023
 description: My experience both good and bad of living as an expat in Colombia for the last three years.
 draft: false
 featured: true
 publishedAt: 10/25/2023
 relatedArticles:
-  - archive/2021/looking-at-2021-with-2020-vision
-  - archive/2021/renting-as-an-expat-in-colombia
+  - 2021/looking-at-2021-with-2020-vision
+  - 2021/renting-as-an-expat-in-colombia
 tags:
   - colombia
 title: Three Years Of Living In Colombia
@@ -23,6 +23,7 @@ title: Three Years Of Living In Colombia
 
 import { Image } from 'astro:assets'
 import Signature from '~/components/signature.astro'
+import heroImage from './colombia.avif'
 
 # {frontmatter.description}
 
@@ -33,7 +34,7 @@ import Signature from '~/components/signature.astro'
 		fetchpriority='high'
 		height={400}
 		quality={100}
-		src={frontmatter.coverImage.src}
+		src={heroImage}
 		width={800}
 	/>
 	<small>{frontmatter.coverImage.alt}</small>
