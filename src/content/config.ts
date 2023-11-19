@@ -10,11 +10,8 @@ const authorSchema = z.object({
 	bio: z.string(),
 	email: z.string().email(),
 	github: z.string().url(),
-	instagram: z.string().url(),
 	linkedIn: z.string().url(),
 	name: z.string(),
-	telegram: z.string().url(),
-	twitter: z.string().url(),
 })
 
 const CATEGORIES = ['expat', 'personal', 'technology', 'travel'] as const
