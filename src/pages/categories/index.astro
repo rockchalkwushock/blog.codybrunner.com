@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content'
+
+import BaseLayout from '~/layouts/base-layout.astro'
+import Head from '~/components/head.astro'
+import Link from '~/components/link.astro'
+import SimpleLayout from '~/components/simple-layout.astro'
+import { getCategoryCount, isPublished } from '~/utils/helpers'
+import { toCapitalize } from '~/utils/strings'
+import type { CategoryEnum } from '~/content/config'
+
+let articles = await getCollection('articles', article => {
+	if (import.meta.env.MODE === 'production') {
+		return isPublished(article)
+	}
+	return true
+})
+
+const categories = [
+	...new Set(
+		articles
+			.map(article => article.data.categories)
+			.flat()
+			.filter(tag => typeof tag !== 'undefined')
+			.sort()
+	),
+] as const
+
+const METADATA = {
+	description: 'Categories for all the articles on my blog.',
+	title: 'Categories',
+} as const
+---
+
+<BaseLayout>
+	<Head
+		description={METADATA.description}
+		slot='metadata'
+		title={METADATA.title}
+	/>
+	<SimpleLayout intro='' slot='content' title='Categories'>
+		<ul class='grid grid-cols-1 gap-4 lg:grid-cols-3'>
+			{
+				categories.map(category => (
+					<Link
+						aria-label={`Go to ${toCapitalize(
+							category as string
+						)} category articles page.`}
+						class='flex h-80 w-full scale-95 items-center justify-center gap-2 rounded-lg bg-primary-50 px-3 py-2 text-2xl transition hover:scale-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-700'
+						href={`/categories/${category}`}
+					>
+						<span>{toCapitalize(category as string)}</span>
+						<span class='text-lg text-accent-700 dark:text-accent-600'>
+							({getCategoryCount(articles, category as CategoryEnum)})
+						</span>
+					</Link>
+				))
+			}
+		</ul>
+	</SimpleLayout>
+</BaseLayout>

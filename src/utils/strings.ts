@@ -29,10 +29,17 @@ export function capitalizeJS(str: string): string {
 const oddBalls = ['cli', 'ssh']
 
 export function parseOddBalls(str: string): string {
+	if (str === 'ci-cd') return 'CI/CD'
+	if (str === 'github-actions') return 'GitHub Actions'
+	if (str === 'graphql') return 'GraphQL'
 	if (str === 'javascript') return 'JavaScript'
 	if (str === 'macos') return 'macOS'
+	if (str === 'psql') return 'PostgreSQL'
+	if (str === 'qwik-city') return 'Qwik City'
 	if (str === 'tailwindcss') return 'TailwindCSS'
 	if (str === 'typescript') return 'TypeScript'
+	if (str === 'vscode') return 'VS Code'
+	if (str === 'zsh') return 'ZSH'
 	if (oddBalls.includes(str)) return str.toUpperCase()
 	return str
 }

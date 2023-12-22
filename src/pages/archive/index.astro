@@ -15,16 +15,29 @@ const articles = await getCollection('articles', article => {
 })
 
 const archivedMap = createArchivedMap(articles)
+
+const METADATA = {
+	description:
+		'The collection of all the posts I have made since starting my blog in 2017.',
+	title: 'Archive',
+} as const
 ---
 
 <BaseLayout>
-	<!-- TODO: Update SEO -->
-	<Head slot='metadata' />
-	<SimpleLayout intro='The collection of all the posts I have made since starting my blog in 2017.' slot='content' title='Archive'>
-		<div class='flex mb-8'>
+	<Head
+		description={METADATA.description}
+		slot='metadata'
+		title={METADATA.title}
+	/>
+	<SimpleLayout
+		intro='The collection of all the posts I have made since starting my blog in 2017.'
+		slot='content'
+		title='Archive'
+	>
+		<div class='mb-8 flex'>
 			<Link
 				aria-label='Go to Articles.'
-				class='bg-primary-50 flex items-center gap-2 px-3 py-2 rounded-lg scale-95 transition dark:bg-primary-800/50 hover:scale-100 hover:bg-primary-200 dark:hover:bg-primary-700'
+				class='flex scale-95 items-center gap-2 rounded-lg bg-primary-50 px-3 py-2 transition hover:scale-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-700'
 				href='/'
 			>
 				<span>←</span>
@@ -44,10 +57,10 @@ const archivedMap = createArchivedMap(articles)
 				))
 			}
 		</div>
-		<div class='flex mt-16'>
+		<div class='mt-16 flex'>
 			<Link
 				aria-label='Go to Articles.'
-				class='bg-primary-50 flex items-center gap-2 px-3 py-2 rounded-lg scale-95 transition dark:bg-primary-800/50 hover:scale-100 hover:bg-primary-200 dark:hover:bg-primary-700'
+				class='flex scale-95 items-center gap-2 rounded-lg bg-primary-50 px-3 py-2 transition hover:scale-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-700'
 				href='/'
 			>
 				<span>←</span>

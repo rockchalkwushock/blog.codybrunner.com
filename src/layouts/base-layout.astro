@@ -21,10 +21,12 @@ import { cn } from '~/utils/helpers'
 
 const { pathname } = Astro.url
 const isActive = (path: string) => Astro.url.pathname.startsWith(path)
-const isHomePage = Astro.url.pathname === '/'
+// Because each subdomain is a different project it's necessary to look
+// at the href and make sure it matches the home page exactly.
+const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 ---
 
-<html lang="en">
+<html lang='en'>
 	<head>
 		<slot name='metadata' />
 	</head>
@@ -63,9 +65,9 @@ const isHomePage = Astro.url.pathname === '/'
 											style='opacity: var(--avatar-border-opacity, 0); transform: var(--avatar-border-transform);'
 										>
 											<Link
-												aria-label="Go to Home Page."
+												aria-label='Go to Home Page.'
 												class='pointer-events-auto block h-16 w-16 origin-left'
-												href="https://codybrunner.com"
+												href='https://codybrunner.com'
 												style='transform: var(--avatar-image-transform)'
 											>
 												<Image
@@ -101,9 +103,9 @@ const isHomePage = Astro.url.pathname === '/'
 											)}
 										>
 											<Link
-												aria-label="Go to Home Page."
+												aria-label='Go to Home Page.'
 												class='pointer-events-auto'
-												href="https://codybrunner.com"
+												href='https://codybrunner.com'
 											>
 												<Image
 													alt='Logo'
@@ -118,24 +120,21 @@ const isHomePage = Astro.url.pathname === '/'
 								}
 							</div>
 							<div class='flex flex-1 justify-end md:justify-center'>
-								<MobileNav
-									client:only='react'
-									currentPath={pathname}
-								/>
+								<MobileNav client:only='react' currentPath={pathname} />
 								<nav class='pointer-events-auto hidden md:block'>
 									<ul
 										class='flex rounded-full bg-white/90 px-3 text-sm font-medium shadow-lg shadow-primary-800/5 ring-1 ring-primary-900/5 backdrop-blur dark:bg-primary-800/90 dark:ring-white/10'
 									>
 										<li class='relative block px-3 py-2 transition'>
 											<Link
-												aria-label="Go to About Page."
+												aria-label='Go to About Page.'
 												class={cn(
 													'',
 													isActive('/about')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="https://codybrunner.com/about"
+												href='https://codybrunner.com/about'
 											>
 												About
 												{
@@ -147,14 +146,14 @@ const isHomePage = Astro.url.pathname === '/'
 										</li>
 										<li class='relative block px-3 py-2 transition'>
 											<Link
-												aria-label="Go to Articles Page."
+												aria-label='Go to Articles Page.'
 												class={cn(
 													'',
 													isActive('/')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="/"
+												href='/'
 											>
 												Articles
 												{
@@ -166,14 +165,14 @@ const isHomePage = Astro.url.pathname === '/'
 										</li>
 										<li class='relative block px-3 py-2 transition'>
 											<Link
-												aria-label="Go to Bookshelf Page."
+												aria-label='Go to Bookshelf Page.'
 												class={cn(
 													'',
 													isActive('/bookshelf')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="https://codybrunner.com/bookshelf"
+												href='https://codybrunner.com/bookshelf'
 											>
 												Bookshelf
 												{
@@ -185,14 +184,14 @@ const isHomePage = Astro.url.pathname === '/'
 										</li>
 										<li class='relative block px-3 py-2 transition'>
 											<Link
-												aria-label="Go to Projects Page."
+												aria-label='Go to Projects Page.'
 												class={cn(
 													'',
 													isActive('/projects')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="https://codybrunner.com/projects"
+												href='https://codybrunner.com/projects'
 											>
 												Projects
 												{
@@ -204,14 +203,14 @@ const isHomePage = Astro.url.pathname === '/'
 										</li>
 										<li class='relative block px-3 py-2 transition'>
 											<Link
-												aria-label="Go to Uses Page."
+												aria-label='Go to Uses Page.'
 												class={cn(
 													'',
 													isActive('/uses')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="https://codybrunner.com/uses"
+												href='https://codybrunner.com/uses'
 											>
 												Uses
 												{
@@ -224,7 +223,9 @@ const isHomePage = Astro.url.pathname === '/'
 									</ul>
 								</nav>
 							</div>
-							<div class='hidden md:flex md:items-center md:justify-end md:flex-1'>
+							<div
+								class='hidden md:flex md:flex-1 md:items-center md:justify-end'
+							>
 								<ThemeToggle client:only='react' />
 							</div>
 						</div>
@@ -246,15 +247,15 @@ const isHomePage = Astro.url.pathname === '/'
 									class='flex flex-col items-center gap-6 sm:items-start sm:gap-3'
 								>
 									<ul
-										class='flex place-items-center gap-4 text-sm font-medium md:flex-wrap md:justify-center md:gap-x-6 md:gap-y-1'
+										class='flex flex-wrap place-items-center justify-center gap-4 text-sm font-medium md:gap-x-6 md:gap-y-1'
 									>
 										{
 											!isHomePage && (
 												<li>
 													<Link
-														aria-label="Go to Home Page."
+														aria-label='Go to Home Page.'
 														class='hover:text-accent-500 dark:hover:text-accent-400'
-														href="https://codybrunner.com"
+														href='https://codybrunner.com'
 													>
 														Home
 													</Link>
@@ -263,50 +264,50 @@ const isHomePage = Astro.url.pathname === '/'
 										}
 										<li>
 											<Link
-												aria-label="Go to About Page."
+												aria-label='Go to About Page.'
 												class={cn(
 													'',
 													isActive('/about')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="https://codybrunner.com/about"
+												href='https://codybrunner.com/about'
 											>
 												About
 											</Link>
 										</li>
 										<li>
 											<Link
-												aria-label="Go to Articles Page."
+												aria-label='Go to Articles Page.'
 												class={cn(
 													'',
 													isActive('/')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="/"
+												href='/'
 											>
 												Articles
 											</Link>
 										</li>
 										<li>
 											<Link
-												aria-label="Go to Bookshelf Page."
+												aria-label='Go to Bookshelf Page.'
 												class={cn(
 													'',
 													isActive('/bookshelf')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="https://codybrunner.com/bookshelf"
+												href='https://codybrunner.com/bookshelf'
 											>
 												Bookshelf
 											</Link>
 										</li>
 										<li>
 											<Link
-												aria-label="Go to my Appointlet Booking Page."
-												class="hover:text-accent-500 dark:hover:text-accent-400"
+												aria-label='Go to my Appointlet Booking Page.'
+												class='hover:text-accent-500 dark:hover:text-accent-400'
 												href='https://appt.link/cody-brunner-dev/video-call'
 												rel='noopener noreferrer'
 												target='_blank'
@@ -316,28 +317,28 @@ const isHomePage = Astro.url.pathname === '/'
 										</li>
 										<li>
 											<Link
-												aria-label="Go to Projects Page."
+												aria-label='Go to Projects Page.'
 												class={cn(
 													'',
 													isActive('/projects')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="https://codybrunner.com/projects"
+												href='https://codybrunner.com/projects'
 											>
 												Projects
 											</Link>
 										</li>
 										<li>
 											<Link
-												aria-label="Go to Uses Page."
+												aria-label='Go to Uses Page.'
 												class={cn(
 													'',
 													isActive('/uses')
 														? 'text-accent-500 dark:text-accent-400'
 														: 'hover:text-accent-500 dark:hover:text-accent-400'
 												)}
-												href="https://codybrunner.com/uses"
+												href='https://codybrunner.com/uses'
 											>
 												Uses
 											</Link>
@@ -354,7 +355,7 @@ const isHomePage = Astro.url.pathname === '/'
 												>
 											</div>
 											<Link
-												aria-label="All rights reserved."
+												aria-label='All rights reserved.'
 												class='text-center text-sm text-primary-400 hover:text-accent-500 dark:text-primary-500 dark:hover:text-accent-400 sm:text-right'
 												href='http://creativecommons.org/licenses/by-nc-nd/4.0'
 												rel='noopener noreferrer'
@@ -362,10 +363,17 @@ const isHomePage = Astro.url.pathname === '/'
 											>
 												All rights reserved
 											</Link>
+											<Link
+												aria-label='Go to my RSS Feed.'
+												class='text-center text-sm text-primary-400 hover:text-accent-500 dark:text-primary-500 dark:hover:text-accent-400 sm:text-right'
+												href='/rss.xml'
+											>
+												RSS Feed
+											</Link>
 										</div>
 									</div>
 								</div>
-								<div class="flex items-center justify-between md:justify-end">
+								<div class='flex items-center justify-between md:justify-end'>
 									<ThemeToggle client:only='react' />
 								</div>
 							</div>

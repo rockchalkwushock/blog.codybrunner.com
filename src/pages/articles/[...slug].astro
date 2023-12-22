@@ -11,6 +11,8 @@ import type { Article } from '~/content/config'
 import BaseLayout from '~/layouts/base-layout.astro'
 import { formatDate, formatToDateTimeString } from '~/utils/strings'
 import { isAfter, isPublished, sortArticles } from '~/utils/helpers'
+import Tag from '~/components/tag.astro'
+import Category from '~/components/category.astro'
 
 export async function getStaticPaths() {
 	let articles = await getCollection('articles', article => {
@@ -96,6 +98,24 @@ const { Content } = await render()
 					<div class='prose mt-8 dark:prose-invert'>
 						<Content />
 					</div>
+					{
+						typeof article.categories !== 'undefined' && (
+							<div class='grid grid-cols-1 gap-3 pb-3 md:grid-cols-4'>
+								{article.categories.map(category => (
+									<Category category={category} />
+								))}
+							</div>
+						)
+					}
+					{
+						typeof article.tags !== 'undefined' && (
+							<div class='grid grid-cols-1 gap-3 pb-8 md:grid-cols-4'>
+								{article.tags.map(tag => (
+									<Tag tag={tag} />
+								))}
+							</div>
+						)
+					}
 					<div
 						class='flex gap-4 rounded-xl p-6 shadow-lg shadow-primary-800/5 ring-1 ring-primary-900/5 dark:ring-white/10'
 					>

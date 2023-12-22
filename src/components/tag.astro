@@ -1,0 +1,19 @@
+---
+import type { TagsEnum } from '~/content/config'
+import Link from './link.astro'
+import { capitalizeJS, parseOddBalls, toCapitalize } from '~/utils/strings'
+
+export interface Props {
+	tag: TagsEnum
+}
+
+const { tag } = Astro.props
+---
+
+<Link
+	aria-label={`Go to ${tag} articles page.`}
+	class='scale-95 rounded-full bg-primary-50 px-2.5 py-1 text-center text-sm tracking-wide transition hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-700'
+	href={`/tags/${tag}`}
+>
+	{capitalizeJS(toCapitalize(parseOddBalls(tag)))}
+</Link>

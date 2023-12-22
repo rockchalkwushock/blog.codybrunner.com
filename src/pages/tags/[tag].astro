@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content'
+
+import BaseLayout from '~/layouts/base-layout.astro'
+import Article from '~/components/article.astro'
+import Head from '~/components/head.astro'
+import SimpleLayout from '~/components/simple-layout.astro'
+import { filterArticles, hasTag, isPublished } from '~/utils/helpers'
+import type { Article as ArticleType, TagsEnum } from '~/content/config'
+import { capitalizeJS, parseOddBalls, toCapitalize } from '~/utils/strings'
+
+export async function getStaticPaths() {
+	let articles = await getCollection('articles', article => {
+		if (import.meta.env.MODE === 'production') {
+			return isPublished(article)
+		}
+		return true
+	})
+
+	const tags = [
+		...new Set(
+			articles
+				.map(article => {
+					if (typeof article.data.tags === 'undefined') return undefined
+					return article.data.tags
+				})
+				.flat()
+				.filter(tag => typeof tag !== 'undefined')
+				.sort()
+		),
+	] as const
+
+	return tags.map(tag => {
+		return {
+			params: { tag },
+			props: {
+				articles: filterArticles(articles, article =>
+					hasTag(article, tag as TagsEnum)
+				),
+			},
+		}
+	})
+}
+
+export interface Props {
+	readonly articles: ArticleType[]
+}
+const { tag } = Astro.params
+const { articles } = Astro.props
+
+const METADATA = {
+	description: `Articles tagged with ${capitalizeJS(
+		toCapitalize(parseOddBalls(tag as string))
+	)}`,
+	title: `${capitalizeJS(toCapitalize(parseOddBalls(tag as string)))}`,
+}
+---
+
+<BaseLayout>
+	<Head
+		description={METADATA.description}
+		slot='metadata'
+		title={METADATA.title}
+	/>
+	<SimpleLayout
+		intro={`Articles tagged with ${capitalizeJS(
+			toCapitalize(parseOddBalls(tag as string))
+		)}.`}
+		slot='content'
+		title={`Tag: ${capitalizeJS(toCapitalize(parseOddBalls(tag as string)))}`}
+	>
+		<div
+			class='md:border-l md:border-primary-100 md:pl-6 md:dark:border-primary-700/40'
+		>
+			<div class='flex max-w-3xl flex-col space-y-16'>
+				{
+					articles.map(({ data: article, slug }) => (
+						<Article article={article} slug={slug} />
+					))
+				}
+			</div>
+		</div>
+	</SimpleLayout>
+</BaseLayout>

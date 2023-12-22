@@ -1,0 +1,19 @@
+---
+import type { CategoryEnum } from '~/content/config'
+import Link from './link.astro'
+import { capitalizeJS, parseOddBalls, toCapitalize } from '~/utils/strings'
+
+export interface Props {
+	category: CategoryEnum
+}
+
+const { category } = Astro.props
+---
+
+<Link
+	aria-label={`Go to ${category} articles page.`}
+	class='scale-95 rounded-full bg-accent-50 px-2.5 py-1 text-center text-sm tracking-wide transition hover:bg-accent-200 dark:bg-accent-800/50 dark:hover:bg-accent-700'
+	href={`/categories/${category}`}
+>
+	{capitalizeJS(toCapitalize(parseOddBalls(category)))}
+</Link>

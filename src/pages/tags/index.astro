@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content'
+
+import BaseLayout from '~/layouts/base-layout.astro'
+import Head from '~/components/head.astro'
+import Link from '~/components/link.astro'
+import SimpleLayout from '~/components/simple-layout.astro'
+
+import { getTagCount, isPublished } from '~/utils/helpers'
+import { capitalizeJS, parseOddBalls, toCapitalize } from '~/utils/strings'
+import type { TagsEnum } from '~/content/config'
+
+let articles = await getCollection('articles', article => {
+	if (import.meta.env.MODE === 'production') {
+		return isPublished(article)
+	}
+	return true
+})
+
+const tags = [
+	...new Set(
+		articles
+			.map(article => article.data.tags)
+			.flat()
+			.filter(tag => typeof tag !== 'undefined')
+			.sort()
+	),
+] as const
+
+const METADATA = {
+	description: 'Tags for all the articles on my blog.',
+	title: 'Tags',
+} as const
+---
+
+<BaseLayout>
+	<Head
+		description={METADATA.description}
+		slot='metadata'
+		title={METADATA.title}
+	/>
+	<SimpleLayout intro='' slot='content' title='Tags'>
+		<ul class='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+			{
+				tags.map(tag => (
+					<Link
+						aria-label={`Go to ${capitalizeJS(
+							toCapitalize(parseOddBalls(tag as string))
+						)} tag articles page.`}
+						class='flex h-80 w-full scale-95 items-center justify-center gap-2 rounded-lg bg-primary-50 px-3 py-2 text-2xl transition hover:scale-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-700'
+						href={`/tags/${tag}`}
+					>
+						<span>
+							{capitalizeJS(toCapitalize(parseOddBalls(tag as string)))}
+						</span>
+						<span class='text-lg text-accent-700 dark:text-accent-600'>
+							({getTagCount(articles, tag as TagsEnum)})
+						</span>
+					</Link>
+				))
+			}
+		</ul>
+	</SimpleLayout>
+</BaseLayout>
