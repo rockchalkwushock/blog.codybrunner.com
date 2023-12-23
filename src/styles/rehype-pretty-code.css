@@ -1,14 +1,15 @@
 @import './tailwind.css';
 
-div[data-rehype-pretty-code-fragment] {
+figure[data-rehype-pretty-code-figure] {
   @apply relative;
 }
 
-div[data-rehype-pretty-code-title] {
-  @apply absolute text-sm bg-primary-100 dark:bg-primary-950 shadow shadow-primary-800 px-3 py-1 -left-2 -top-4 rounded-full ring-1 ring-primary-100 dark:ring-primary-300/20;
+div[data-rehype-pretty-code-title],
+figcaption[data-rehype-pretty-code-title] {
+  @apply absolute text-sm text-primary-950 bg-primary-100 dark:bg-primary-950 shadow shadow-primary-800 px-3 py-1 -left-2 -top-5 rounded-full ring-1 ring-primary-100 dark:text-primary-400 dark:ring-primary-300/20;
 }
 
-div[data-rehype-pretty-code-caption] {
+figcaption[data-rehype-pretty-code-caption] {
   @apply text-sm px-4 text-center pt-1.5 text-accent-500/90;
 }
 

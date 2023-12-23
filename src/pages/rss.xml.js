@@ -24,7 +24,7 @@ export async function GET(context) {
 			categories: [...article.data.categories, ...(article.data.tags ?? [])],
 			content: sanitizeHtml(parser.render(article.body)),
 			description: article.data.description,
-			link: `/articles/${article.slug}`,
+			link: article.slug,
 			pubDate: article.data.publishedAt,
 			source: {
 				title: 'RSS Feed | blog.codybrunner.com',

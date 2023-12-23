@@ -20,7 +20,7 @@ const { article, slug } = Astro.props
 				class='absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-primary-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 dark:bg-primary-800/50 sm:-inset-x-6 sm:rounded-2xl'
 			>
 			</div>
-			<Link aria-label={`Go to ${article.title}`} href={`/articles/${slug}`}>
+			<Link aria-label={`Go to ${article.title}`} href={`/${slug}`}>
 				<span
 					class='absolute -inset-x-4 -inset-y-6 z-20 sm:-inset-x-6 sm:rounded-2xl'
 				></span>
