@@ -36,15 +36,23 @@ export type Props = Article
 const { data: article, render } = Astro.props
 const { data: author } = await getEntry(article.author)
 const { Content } = await render()
----
-
-<BaseLayout>
+// TODO: Add back og:image override when CDN is configured
+/*
 	<Head
 		description={article.description}
 		image={article.coverImage
 			? new URL(article.coverImage.src, Astro.url)
 			: undefined}
 		imageAlt={article.coverImage ? article.coverImage.alt : undefined}
+		slot='metadata'
+		title={article.title}
+	/>
+*/
+---
+
+<BaseLayout>
+	<Head
+		description={article.description}
 		slot='metadata'
 		title={article.title}
 	/>
