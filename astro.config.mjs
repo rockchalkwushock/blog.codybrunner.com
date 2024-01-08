@@ -9,6 +9,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeExternalLinks from 'rehype-external-links'
 import rehypeSlug from 'rehype-slug'
 import rehypePrettyCode from 'rehype-pretty-code'
+import { remarkReadingTime } from './plugins/remark-reading-time'
 
 const currentYear = new Date().getFullYear()
 
@@ -92,7 +93,7 @@ export default defineConfig({
 			],
 			rehypeAccessibleEmojis,
 		],
-		remarkPlugins: [],
+		remarkPlugins: [remarkReadingTime],
 		// Necessary to allow for `rehype-pretty-code` to work.
 		syntaxHighlight: false,
 	},

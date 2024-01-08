@@ -41,12 +41,18 @@ dependencies:
   markdown-it:
     specifier: 14.0.0
     version: 14.0.0
+  mdast-util-to-string:
+    specifier: ~4.0.0
+    version: 4.0.0
   react:
     specifier: 18.2.0
     version: 18.2.0
   react-dom:
     specifier: 18.2.0
     version: 18.2.0(react@18.2.0)
+  reading-time:
+    specifier: ~1.5.0
+    version: 1.5.0
   rehype-accessible-emojis:
     specifier: 0.3.2
     version: 0.3.2
@@ -4140,6 +4146,10 @@ packages:
     engines: {node: '>=8.10.0'}
     dependencies:
       picomatch: 2.3.1
+
+  /reading-time@1.5.0:
+    resolution: {integrity: sha512-onYyVhBNr4CmAxFsKS7bz+uTLRakypIe4R+5A824vBSkQy/hB3fZepoVEf8OVAxzLvK+H/jm9TzpI3ETSm64Kg==}
+    dev: false
 
   /regenerator-runtime@0.14.0:
     resolution: {integrity: sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==}
