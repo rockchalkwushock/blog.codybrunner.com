@@ -82,11 +82,13 @@ const articleSchema = z.object({
 		.optional(),
 	relatedArticles: z.array(reference('articles')).optional(),
 	tags: tagsSchema,
+	timeToRead: z.string().optional(),
 	title: z.string(),
 	updatedAt: z
 		.string()
 		.transform(str => new Date(str))
 		.optional(),
+	wordCount: z.number().optional(),
 })
 
 export const collections = {

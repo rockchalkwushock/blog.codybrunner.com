@@ -1,0 +1,12 @@
+import getReadingTime from 'reading-time'
+import { toString } from 'mdast-util-to-string'
+
+export function remarkReadingTime() {
+	return function (tree, { data }) {
+		const textOnPage = toString(tree)
+		const readingTime = getReadingTime(textOnPage)
+
+		data.astro.frontmatter.timeToRead = readingTime.text
+		data.astro.frontmatter.wordCount = readingTime.words
+	}
+}
