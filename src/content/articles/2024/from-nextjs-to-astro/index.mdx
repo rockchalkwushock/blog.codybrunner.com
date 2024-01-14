@@ -1,0 +1,135 @@
+---
+archived: false
+author: cody-brunner
+canonicalURL: https://blog.codybrunner.com/2024/from-nextjs-to-astro
+categories:
+  - technology
+coverImage:
+  alt: Moving from NextJS to Astro.
+  src: ./hero.webp
+createdAt: 01/08/2024
+description: In 2023 I began making the move from NextJS to Astro for my personal website and blog. This is my experience with the transition.
+draft: false
+featured: true
+publishedAt: 01/15/2024
+tags:
+  - astro
+  - nextjs
+  - tailwindcss
+  - typescript
+title: From NextJS to Astro
+---
+
+import { Image } from 'astro:assets'
+import Giphy from '~/components/giphy.astro'
+import Signature from '~/components/signature.astro'
+import heroImage from './hero.webp'
+
+# {frontmatter.description}
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+		alt={frontmatter.coverImage.alt}
+		class='object-cover'
+		fetchpriority='high'
+		height={400}
+		quality={100}
+		src={heroImage}
+		width={800}
+	/>
+	<small>{frontmatter.coverImage.alt}</small>
+</div>
+
+## Introduction
+
+I have been using [NextJS](https://nextjs.org) since the [v3 iteration](https://github.com/rockchalkwushock/my-blog) and the [last iteration](https://github.com/rockchalkwushock/codybrunner.com/tree/7acba36273a8588f6b2e703b3f34e43bd2f91b10) of my website was written using v12. I had mostly been very impressed and happy with using Next. That started to change with v12 as I began to feel more and more like it was doing too much. I still think it's the go too at least at the time of writing for anyone wanting to create a full-stack application with React (albeit [Remix](https://remix.run) is hot on Next's tail!). There are other options today as well including but not limited too [Nuxt](https://nuxt.com), [SvelteKit](https://kit.svelte.dev), and [QwikCity](https://qwik.builder.io/docs/). For this iteration though I opted to give the new hotness on the block [Astro](https://astro.build) a spin and I got to say I love using Astro.
+
+## Why move away from NextJS?
+
+I would say the number one reason was that when something goes wrong in Next or you get off the beaten path of the examples directory...you are in for some real fun with the error messages! Once you get the hang of the error messages that are pertaining to when you are on the server or the client it becomes a little bit easier, but with the advent of some of the newer features of Next there is a whole other layer of complexity. I don't know about you, but it definitely seems like since mid-2023 we as an industry are moving back to server-side paradigms and throwing out all the complexity we can.
+
+> AND👏🏻I👏🏻AM👏🏻HERE👏🏻FOR👏🏻IT!!!!
+
+Being someone who got started in 2015 learning React and web development in the initial days of rolling your own webpack, babel, tsconig, etc etc etc I like many have some serious "config fatigue".
+
+## What is so great about Astro?
+
+There is a lot to love about Astro. My favorite features have to be [Astro Islands](#astro-island-architecture), [Frontend Framework Integrations](#frontend-framework-integrations), and [Content Collections](#content-collections). But it's worthy to note other features that make Astro great!
+
+- ease of getting started without a ton of configuration necessary
+- by default Astro is server-side rendered (SSR)
+- by default Astro will send zero JavaScript to the client
+- ease of customization through [official](https://astro.build/integrations/?search=&categories%5B%5D=official) and [community](https://astro.build/integrations/) plugins
+
+## Astro Island Architecture
+
+An _island_, as per the Astro docs, is an interactive UI component. On this website, for example, when viewed on mobile their is a hamburger menu that opens to a dropdown and transitions into the viewport using `@headlessui/react`. Since this is using React code when utilizing the component I need to pass a client side directive to the component telling Astro when/how to load the component.
+
+```tsx
+<MobileNav
+	client:only='react'
+	currentPath={pathname}
+/>
+```
+
+If the `client:only='react'` directive is not passed then Astro will strip out the client side JavaScript to prevent sending unnecessary or unwanted JavaScript to the client. This is the default behavior of Astro as it is server-side rendered and one of it's goals is to ship the least amount of JavaScript to your users. The same concept is used with the `<ThemeToggle client:only='react' />` that is triggering global JavaScript code to toggle the theme and persist that change in `localStorage`.
+
+- [MobileNav](https://github.com/rockchalkwushock/codybrunner.com/blob/production/src/layouts/base-layout.astro#L130)
+- [ThemeToggle](https://github.com/rockchalkwushock/codybrunner.com/blob/production/src/layouts/base-layout.astro#L379)
+
+## Frontend Framework Integrations
+
+Astro can easily work with nearly all the major frontend frameworks like [AlpineJS](https://alpinejs.dev/), [AngularJS](https://angularjs.org/), [Lit](https://lit.dev/), [PreactJS](https://preactjs.com/), [Qwik](https://qwik.builder.io/) [ReactJS](https://react.dev/), [SolidJS](https://www.solidjs.com/), [Svelte](https://svelte.dev/), [VueJS](https://vuejs.org/) and even the new hotness [htmx](https://htmx.org/)
+
+In my case for migrating away from NextJS it was pretty simple to just bring my React code right over with minimal adjustments needed. I won't go into how to do this as you can follow the [guide](https://docs.astro.build/en/guides/integrations-guide/react/) for adding React and another [guide](https://docs.astro.build/en/guides/integrations-guide/tailwind/) for integrating TailwindCSS through the Astro docs.
+
+## Content Collections
+
+This is a real godsend for managing content within the blog portion of my website. `zod` enables a type-safe schema that will let me know right away if I missed something in the frontmatter of a post, if the type is not correct, or I am using a tag that has not been defined yet within the blog. It's a great addition and has made managing my blog significantly easier than past iterations using Gatsby & Next.
+
+```ts caption="Defining the schema for a blog post with Zod." title="~/content/config"
+import { defineCollection, z } from 'astro:content'
+
+const blogSchema = z.object({
+	createdAt: z.string().transform(str => new Date(str)),
+	description: z.string(),
+	draft: z.boolean().default(true),
+	title: z.string(),
+})
+
+export const collections = {
+	// Astro will now expect to find content at
+	// ~/content/blog/your-post-here.md
+	blog: defineCollection({
+		schema: blogSchema,
+		type: 'content',
+	}),
+}
+```
+
+With the schema defined the next time the Astro development server is started a hidden directory called `.astro/` will be generated with a `types.d.ts` that conforms to the schema you defined. Now when Astro is loading you markdown or MDX files at runtime if any of the required keys of the schema are missing or of the incorrect type you will see error messages in the terminal and browser to tell you the contract you defined is not being met. It's become super handy to have that schema in place as I am working to port over older posts and archive them. I can copy and past an old post in and then let the failing contract point me to all the things that need to be updated within that post.
+
+You can take a look at how I manage content using content collections [here](https://github.com/rockchalkwushock/blog.codybrunner.com/blob/production/src/content/config.ts).
+
+
+## My experience with the migration
+
+This has been probably one of the easiest migrations from one piece of tech to another I have ever done. The fact I could drag and drop the necessary React components into this and it just work was the chef's kiss. TailwindCSS integrated with zero issues as well. I really have enjoyed using the Astro components and getting back to just working primarily with HTML and lowering the amount of complexity around components and the code base in general. One thing I am really hoping to figure out is how to extract out the general theme and components into my own library to use across the various projects. I say this because [codybrunner.com](https://codybrunner.com) is it's own Astro application as is [blog.codybrunner.com](https://blog.codybrunner.com). They both run on their own [fly.io](https://fly.io) instances. There are other projects that are on the way that will live under different subdomains as well so being able to just import the theme and necessary global components would be fantastic!
+
+## Next steps
+
+- Replace React code with AlpineJS and htmx.
+- Abstract out tailwind config to use across subdomains.
+- Abstract out global components into a library to use across subdomains instead of relying on copy pasta.
+- Move away from a completely statically generated site to a hybrid model.
+- Add i18n to the website and eventually the blog covering both English & Spanish languages.
+- Add a custom endpoint for handling the addition of a newsletter.
+- Add realtime views & likes with PocketBase.
+
+## Wrap Up
+
+Overall I have been very impressed and enjoy using Astro as my go to framework now when developing JavaScript application. I am sure in two to three years there will be something new that comes along...we are talking about the JavaScript ecosystem after all. For now though Astro is my choice because as Brian Fantana would say:
+
+<Giphy giphyId="lKXd9sYM5dI9W" />
+
+<Signature />

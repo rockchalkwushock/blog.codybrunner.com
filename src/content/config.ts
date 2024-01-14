@@ -36,6 +36,7 @@ const TECH_TAGS = [
 	'iterm',
 	'javascript',
 	'macos',
+	'nextjs',
 	'nodejs',
 	'pnpm',
 	'psql',
