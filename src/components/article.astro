@@ -1,6 +1,7 @@
 ---
 import Link from './link.astro'
 import type { Article } from '~/content/config'
+import { cn } from '~/utils/helpers'
 import { formatDate, formatToDateTimeString } from '~/utils/strings'
 
 export type Props = {
@@ -11,7 +12,7 @@ export type Props = {
 const { article, slug } = Astro.props
 ---
 
-<article class='md:grid md:grid-cols-4 md:items-baseline'>
+<article class={cn('md:grid md:grid-cols-4 md:items-baseline', article.draft && 'border-2 border-[#ff0000] p-2 rounded-lg')}>
 	<div class='group relative flex flex-col items-start md:col-span-3'>
 		<h2
 			class='text-base font-semibold tracking-tight text-primary-800 dark:text-primary-100'
