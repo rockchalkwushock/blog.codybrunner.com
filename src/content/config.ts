@@ -30,6 +30,7 @@ const TECH_TAGS = [
 	'deploy',
 	'ecto',
 	'elixir',
+	'fly',
 	'github-actions',
 	'graphql',
 	'hugo',
