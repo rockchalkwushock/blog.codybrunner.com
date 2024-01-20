@@ -32,6 +32,7 @@ const TECH_TAGS = [
 	'elixir',
 	'fly',
 	'github-actions',
+	'go',
 	'graphql',
 	'hugo',
 	'iterm',
