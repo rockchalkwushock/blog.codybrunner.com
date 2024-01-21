@@ -24,6 +24,7 @@ import { Image } from 'astro:assets'
 import Giphy from '~/components/giphy.astro'
 import Signature from '~/components/signature.astro'
 import heroImage from './hero.webp'
+import image1 from './ackchyually.jpeg'
 
 # {frontmatter.description}
 
@@ -44,7 +45,20 @@ import heroImage from './hero.webp'
 
 If I had a penny for how many times I have been told that I would be able to move into a more full stack or even backend role after accepting a Frontend position...I would have a lot of pennies. After five years of working pretty much exclusively on the frontend and in the JavaScript ecosystem I am over it. I want out. I want to solve _actual_ problems, not write the same UI with a different iteration of the same bloated JS frameworks that make me want to hang myself (in ASCII art).
 
-In years past I have experimented with Elixir and I do love the language as well as Phoenix and Phoenix Liveview. So why not double down on Elixir? Albeit the hype around Elixir has definitely grown a lot and that's reflected by the [LINK](). The problem still remains that there are not many job openings that hire for new developers in that space. Most job postings I find are for Seniors, maybe mid-level if I am lucky, and being realistic my Elixir-fu is not that great. I am sure people will argue that it's no different for Go, but I am bullish on this language due to how prevalent it's usage is in DevOps and tooling. Hell just in the JS ecosystem you can find tools like [esbuild]() that were written in Go. Things like [caddy](https://caddyserver.com/), [tailscale](https://tailscale.com/), & [traefik](https://traefik.io/) are all written in Go as well. My decision ultimately came down to [Rust](https://www.rust-lang.org) or [Go](https://go.dev) and I decided that it would be faster and more beneficial to my career to learn Go. Cue the screams of the Rust Andies with "Well Akschully!"
+In years past I have experimented with Elixir and I do love the language as well as Phoenix and Phoenix Liveview. So why not double down on Elixir? Albeit the hype around Elixir has definitely grown a lot. The problem still remains that there are not many job openings that hire for new developers in that space. Most job postings I find are for Seniors, maybe mid-level if I am lucky, and those positions are normally located in the EU. I am sure people will argue that it's no different for Go, but I am bullish on this language due to how prevalent its usage is in DevOps and tooling. Hell just in the JS ecosystem you can find tools like [esbuild](https://esbuild.github.io/) that were written in Go. Things like [caddy](https://caddyserver.com/), [tailscale](https://tailscale.com/), & [traefik](https://traefik.io/) are all written in Go as well. My decision ultimately came down to [Rust](https://www.rust-lang.org) or [Go](https://go.dev) and I decided that it would be faster and more beneficial to my career to learn Go. Cue the screams of the Rust Andies:
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+	alt='Umm well ackchyually Rust is better.'
+	class='object-cover'
+	fetchpriority='low'
+	height={300}
+	quality={100}
+	src={image1}
+	width={300}
+/>
+	<small>Umm well ackchyually Rust is better.</small>
+</div>
 
 ## So why choose Go?
 
@@ -54,7 +68,7 @@ One thing I noticed coming from TypeScript is just how fast Go is when it comes 
 
 > NO MORE CONFIG FATIGUE!!!
 
-At this juncture the only thing I have really setup in a Go project is a `Makefile` which in all honesty I'd never worked with before so there was some learning involved there (psst, article coming soon on this). You can look at the [repository]() for this blog and find 15 files at the root of which 13 have to deal with configuring the project. What in the hell! Why just why??? In a typical Go project you will basically see these files at the root and that's it `.gitignore`, `go.mod`, `go.sum`, `main.go`, and `Makefile`.
+At this juncture the only thing I have really setup in a Go project is a `Makefile` which in all honesty I'd never worked with before so there was some learning involved there (psst, article coming soon on this). You can look at the [repository](https://github.com/rockchalkwushock/blog.codybrunner.com) for this blog and find 15 files at the root of which 13 have to deal with configuring the project. What in the hell! Why just why??? In a typical Go project you will basically see these files at the root and that's it `.gitignore`, `go.mod`, `go.sum`, `main.go`, and `Makefile`.
 
 Back to Rust for a second. Besides the fact that there aren't many jobs for junior Rust developers floating around on the intertubes the actual number one reason why I chose Go over Rust:
 
@@ -64,9 +78,7 @@ I believe it was a year ago that I dabbled around with learning Rust. When I loo
 
 <Giphy giphyId="4JVTF9zR9BicshFAb7" />
 
-I know there are elements to Rust that make it a better and safer language than Go; however the amount of crap you have to go through to get there "hell ta tha nah ta tha nah nah nah!" It makes me feel like I am writing TypeScript again...shots fired?
-
-<Giphy giphyId="u8u0R51ND9L2" />
+I know there are elements to Rust that make it a better and safer language than Go; however the amount of crap you have to go through to get there..."hell ta tha nah ta tha nah nah nah!"
 
 ## Wrap Up
 
