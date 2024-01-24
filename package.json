@@ -52,6 +52,7 @@
 		"@flydotio/dockerfile": "~0.5.0",
 		"@types/react": "18.2.45",
 		"@types/react-dom": "18.2.18",
+		"chalk": "5.3.0",
 		"clsx": "2.0.0",
 		"glob": "10.3.10",
 		"gray-matter": "4.0.3",
