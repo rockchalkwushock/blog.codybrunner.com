@@ -84,7 +84,7 @@ const articleSchema = z.object({
 		.string()
 		.transform(str => new Date(str))
 		.optional(),
-	relatedArticles: z.array(reference('articles')).optional(),
+	relatedArticles: z.array(reference('articles')).default([]),
 	tags: tagsSchema,
 	timeToRead: z.string().optional(),
 	title: z.string(),
