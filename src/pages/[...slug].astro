@@ -4,15 +4,23 @@ import { getCollection, getEntry } from 'astro:content'
 
 import '~/styles/rehype-pretty-code.css'
 
+import Article from '~/components/article.astro'
 import Container from '~/components/container.astro'
 import Head from '~/components/head.astro'
 import Link from '~/components/link.astro'
-import type { Article } from '~/content/config'
+import type { Article as ArticleType } from '~/content/config'
 import BaseLayout from '~/layouts/base-layout.astro'
 import { formatDate, formatToDateTimeString } from '~/utils/strings'
-import { cn, isAfter, isPublished, sortArticles } from '~/utils/helpers'
+import {
+	cn,
+	filterArticles,
+	isAfter,
+	isPublished,
+	sortArticles,
+} from '~/utils/helpers'
 import Tag from '~/components/tag.astro'
 import Category from '~/components/category.astro'
+import { getEntries } from 'astro:content'
 
 export async function getStaticPaths() {
 	let articles = await getCollection('articles', article => {
@@ -31,11 +39,19 @@ export async function getStaticPaths() {
 	}))
 }
 
-export type Props = Article
+export type Props = ArticleType
 
 const { data: article, render } = Astro.props
+
 const { data: author } = await getEntry(article.author)
+let relatedArticles = await getEntries(article.relatedArticles)
+
+if (import.meta.env.MODE === 'production') {
+	relatedArticles = filterArticles(relatedArticles, isPublished)
+}
+
 const { Content, remarkPluginFrontmatter } = await render()
+
 const { timeToRead } = remarkPluginFrontmatter
 // TODO: Add back og:image override when CDN is configured
 /*
@@ -84,7 +100,9 @@ const { timeToRead } = remarkPluginFrontmatter
 						>
 							{article.title}
 						</h1>
-						<span class="text-primary-400 dark:text-primary-500 mt-1">{timeToRead}</span>
+						<span class='mt-1 text-primary-400 dark:text-primary-500'
+							>{timeToRead}</span
+						>
 						<time
 							class='order-first flex items-center text-base text-primary-400 dark:text-primary-500'
 							datetime={formatToDateTimeString(
@@ -126,6 +144,19 @@ const { timeToRead } = remarkPluginFrontmatter
 							</div>
 						)
 					}
+					{
+						relatedArticles.length > 0 && (
+							<div class='flex flex-col gap-8 pb-16'>
+								<h3 class='font-display text-3xl font-bold tracking-tight text-primary-800 sm:text-4xl dark:text-primary-100'>Related Articles</h3>
+								<hr class="border-primary-900/5 dark:border-white/10" />
+								<ul class='flex flex-col gap-16'>
+									{relatedArticles.map(({ data: article, slug }) => (
+										<Article article={article} slug={slug} />
+									))}
+								</ul>
+							</div>
+						)
+					}
 					<div
 						class='flex gap-4 rounded-xl p-6 shadow-lg shadow-primary-800/5 ring-1 ring-primary-900/5 dark:ring-white/10'
 					>
@@ -137,7 +168,7 @@ const { timeToRead } = remarkPluginFrontmatter
 								src={author.avatar}
 								width={120}
 							/>
-							<div class='flex items-center justify-center w-full gap-1'>
+							<div class='flex w-full items-center justify-center gap-1'>
 								<a
 									aria-label="Visit Cody Brunner's Buy Me A Coffee"
 									class='group h-6 w-6'
