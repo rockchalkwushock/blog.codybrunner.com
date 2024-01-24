@@ -20,6 +20,7 @@
 		"dev": "astro dev",
 		"generate": "plop --plopfile ./scripts/plopfile.mjs",
 		"preview": "astro preview",
+		"related-articles": "node ./scripts/relatedArticles.mjs",
 		"start": "astro dev"
 	},
 	"dependencies": {
