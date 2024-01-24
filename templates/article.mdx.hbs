@@ -1,0 +1,41 @@
+---
+archived: false
+author: cody-brunner
+canonicalURL: https://blog.codybrunner.com/{{year}}/{{dashCase title}}
+categories: {{arrayToYAML categories}}
+coverImage:
+  alt: "// TODO"
+  src: ./hero.webp
+createdAt: {{createdAt}}
+description: {{description}}
+draft: false
+featured: true
+relatedArticles: []
+tags: {{arrayToYAML tags}}
+title: {{title}}
+---
+
+import { Image } from 'astro:assets'
+import Signature from '~/components/signature.astro'
+import heroImage from './hero.webp'
+
+# {frontmatter.description}
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+		alt={frontmatter.coverImage.alt}
+		class='object-cover'
+		fetchpriority='high'
+		height={400}
+		quality={100}
+		src={heroImage}
+		width={800}
+	/>
+	<small>{frontmatter.coverImage.alt}</small>
+</div>
+
+## Introduction
+
+## Wrap Up
+
+<Signature />
