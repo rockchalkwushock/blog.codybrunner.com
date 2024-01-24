@@ -1,3 +1,7 @@
+import { sync } from 'glob'
+import { readFileSync } from 'fs'
+import matter from 'gray-matter'
+
 const expatTags = []
 const personalTags = []
 const technologyTags = [
@@ -50,16 +54,47 @@ export default function (
 			}, [])
 			.join('\n')
 	})
+	plop.setHelper('findRelatedArticles', params => {
+		const selectedTags = params.data.root.tags
+		const newArticleSlug = params.data.root.path
+		// TODO: Update this to include all sub-directories in future.
+		const files = sync('./src/content/articles/2024/**/*.mdx')
+		const relatedArticles = []
+
+		files.forEach(file => {
+			const content = readFileSync(file, 'utf-8')
+			const { data } = matter(content)
+			const slug = data.canonicalURL.replace(/.*?(?=\d{4})/g, '')
+			if (
+				slug !== newArticleSlug &&
+				data.tags.some(tag => selectedTags.includes(tag))
+			) {
+				relatedArticles.push(slug)
+			}
+		})
+
+		return relatedArticles.length > 1
+			? relatedArticles
+					.map((str, idx) => {
+						if (idx === 0) return `\n- ${str}`
+						return `- ${str}`
+					})
+					.join('\n')
+			: []
+	})
 	plop.setGenerator('article', {
 		actions: data => {
 			const year = new Date().getFullYear()
 			const [date] = new Date().toLocaleString().split(',')
 			data.createdAt = date
+			data.path = `${year}/${data.title
+				.replace(/[^a-zA-Z0-9]+/g, '-')
+				.toLowerCase()}`
 			data.year = year
 			return [
 				{
-					path: './src/content/articles/{{year}}/{{ dashCase title }}/index.mdx',
-					templateFile: 'templates/article.mdx.hbs',
+					path: '../src/content/articles/{{year}}/{{ dashCase title }}/index.mdx',
+					templateFile: '../templates/article.mdx.hbs',
 					type: 'add',
 				},
 			]
