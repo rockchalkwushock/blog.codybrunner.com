@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets'
-import { getCollection, getEntry } from 'astro:content'
+import { getCollection, getEntries, getEntry } from 'astro:content'
 
 import '~/styles/rehype-pretty-code.css'
 
@@ -20,7 +20,7 @@ import {
 } from '~/utils/helpers'
 import Tag from '~/components/tag.astro'
 import Category from '~/components/category.astro'
-import { getEntries } from 'astro:content'
+
 
 export async function getStaticPaths() {
 	let articles = await getCollection('articles', article => {
