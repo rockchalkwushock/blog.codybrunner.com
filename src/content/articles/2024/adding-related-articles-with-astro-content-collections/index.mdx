@@ -8,7 +8,7 @@ coverImage:
   alt: Managing content with Astro's Content Collections
   src: ./hero.webp
 createdAt: 01/23/2024
-description: Astro's content collection feature is a game changer for easily managing content in a type safe manner it also can help you to easily add a related articles property through referencing the existing schema. In this article I will show you how to achieve this.
+description: Astro's content collection feature is a game changer for easily managing content in a type safe manner. It also can help to easily add related collections or data types through referencing. In this article I show how I implemented a related articles feature.
 draft: true
 featured: false
 relatedArticles:
@@ -17,13 +17,16 @@ relatedArticles:
 - 2024/from-nextjs-to-astro
 tags:
 - astro
+- scripting
 - typescript
 title: Adding Related Articles with Astro Content Collections
 ---
 
 import { Image } from 'astro:assets'
+import Giphy from '~/components/giphy.astro'
 import Signature from '~/components/signature.astro'
 import heroImage from './hero.webp'
+import image1 from './image-1.jpg'
 
 # {frontmatter.description}
 
@@ -42,6 +45,321 @@ import heroImage from './hero.webp'
 
 ## Introduction
 
+In the past iterations of my blog I have implemented a "related posts" feature. To say the least it was not exactly a fun experience. Normally it would entail finding posts with similar tags, creating a list of those posts, removing duplicates, and finally boiling down the list to to most current posts. The previous solution can be found [here](https://github.com/rockchalkwushock/codybrunner.com/blob/02c4f71e5f689d397f6a06b5384b872f5fa8a2af/utils/mdx.ts#L110). Astro provides a pretty handy way to reference existing collections or data types in other schemas using the [`reference`](https://docs.astro.build/en/reference/api-reference/#reference) helper. Albeit this is great for creating the contract that represents what one expects it doesn't go as far as I had hoped it would so there was some hacking to be done!
+
+<Giphy giphyId="YQitE4YNQNahy" />
+
+## Updating the Schema
+
+First up I needed to update the `articleSchema` adding the `relatedArticles` property. I wanted this contract to be required at all times so in the event there is not any related articles the field will be initialized with and empty array.
+
+```diff caption="Updating the schema definition." title="~/content/config.ts"
+- import { defineCollection, z, type CollectionEntry } from 'astro:content'
++import {
++	defineCollection,
++	reference,
++	z,
++	type CollectionEntry,
++} from 'astro:content'
+# ...
+const articleSchema = z.object({
+	archived: z.boolean().default(false),
+	author: reference('authors'),
+	canonicalURL: z.string().url(),
+	categories: categoriesSchema,
+	coverImage: z
+		.object({
+			alt: z.string(),
+			src: z.string().or(z.string().url()),
+		})
+		.optional(),
+	createdAt: z.string().transform(str => new Date(str)),
+	description: z.string(),
+	draft: z.boolean().default(true),
+	featured: z.boolean().default(false),
+	language: z.enum(['en', 'es']).default('en'),
+	publishedAt: z
+		.string()
+		.transform(str => new Date(str))
+		.optional(),
++	relatedArticles: z.array(reference('articles')).default([]),
+	tags: tagsSchema,
+	timeToRead: z.string().optional(),
+	title: z.string(),
+	updatedAt: z
+		.string()
+		.transform(str => new Date(str))
+		.optional(),
+	wordCount: z.number().optional(),
+})
+```
+
+## Updating existing articles
+
+With the schema updated firing up Astro will lead to many a error messages about the existing articles not matching the new schema definitions. That means going through each article and manually updating them as seen below:
+
+```diff caption="Manually adding the related articles" title="2024/from-nextjs-to-astro/index.mdx"
+---
+archived: false
+author: cody-brunner
+canonicalURL: https://blog.codybrunner.com/2024/from-nextjs-to-astro
+categories:
+  - technology
+coverImage:
+  alt: Moving from NextJS to Astro.
+  src: ./hero.webp
+createdAt: 01/08/2024
+description: In 2023 I began making the move from NextJS to Astro for my
+  personal website and blog. This is my experience with the transition.
+draft: false
+featured: true
+publishedAt: 01/15/2024
++ relatedArticles:
++  - 2024/deploying-astro-to-fly/ssr-deployments
++  - 2024/deploying-astro-to-fly/static-deployments
+tags:
+  - astro
+  - nextjs
+  - tailwindcss
+  - typescript
+title: From NextJS to Astro
+---
+```
+
+## Adding the Related Articles to the UI
+
+```diff caption="" title="~/pages/[...slug].astro"
+---
+import { Image } from 'astro:assets'
+- import { getCollection, getEntry } from 'astro:content'
++ import { getCollection, getEntries, getEntry } from 'astro:content'
+
+# ...
+
+export type Props = ArticleType
+
+const { data: article, render } = Astro.props
+
+const { data: author } = await getEntry(article.author)
++ let relatedArticles = await getEntries(article.relatedArticles)
++
++ if (import.meta.env.MODE === 'production') {
++ 	relatedArticles = filterArticles(relatedArticles, isPublished)
++ }
+
+# ...
+---
+
+<BaseLayout>
+	# ...
+	<Container class='mt-16 lg:mt-32' slot='content'>
+					# ...
++					{
++						relatedArticles.length > 0 && (
++							<div class='flex flex-col gap-8 pb-16'>
++								<h3 class='font-display text-3xl font-bold tracking-tight text-primary-800 sm:text-4xl dark:text-primary-100'>Related Articles</h3>
++								<hr class="border-primary-900/5 dark:border-white/10" />
++								<ul class='flex flex-col gap-16'>
++									{relatedArticles.map(({ data: article, slug }) => (
++										<Article article={article} slug={slug} />
++									))}
++								</ul>
++							</div>
++						)
++					}
+					# ...
+	</Container>
+</BaseLayout>
+```
+
+## The Problem
+
+So doing this easily adds the `relatedArticles` feature to the schema and Astro will send me a nasty gram if that is not present in the frontmatter of each article. That's great and all; but I will have to manually add related articles to that property. So what happens six months from now when I write an article that should be related to the [From NextJS to Astro](https://blog.codybrunner.com/2024/from-nextjs-to-astro) article? I have to **remember** to update all articles that should have the new article associated with it. I don't know about you, but I barely remember what I ate for breakfast so that's a tall order!
+
+Thus it is time to do what all great developers do...
+
+> Spend hours automating what could manually be done in 45 minutes because future me doesn't want to do that.
+
+<Giphy giphyId="z5w2bkqsvOYQo" />
+
+## Automating the Related Articles
+
+I don't want to have to think past running a command in the future so scripting it is! I honestly haven't written many scripts in a while. This made things a little challenging but fun. Actually solving a problem I have with code...isn't that why I got into this? Oh how far I hath fallen with thee React 😢
+
+The gist of the code below is as follows:
+
+1. Find where all the files are
+2. Loop over the files & read them one by one
+3. Loop over the files yet again to get reference to other files
+4. Check if the currentFile has tags that are included in the otherFile and if so push the slug of the otherFile onto an array for tracking related files.
+5. Stash that array of related files onto the currentFile's frontmatter
+6. And write the content back to the file in the correct format.
+
+> I brought in [`chalk`](https://github.com/chalk/chalk) to make things look real purty like.
+
+```javascript caption="" title="scripts/relatedArticles.mjs"
+import { sync } from 'glob'
+import { readFileSync, writeFileSync } from 'fs'
+import matter from 'gray-matter'
+import chalk from 'chalk'
+
+const { log } = console
+const info = chalk.cyanBright.bold
+const success = chalk.magentaBright.bold
+
+// TODO: Update this to scan all sub-directories in the future.
+const files = sync('./src/content/articles/2024/**/*.mdx')
+const slugRegex = /.*?(?=\d{4})/g
+
+log(info('Running Script >>>'))
+for (const file of files) {
+	const relatedArticles = []
+	const content = readFileSync(file, 'utf-8')
+	const { data: frontmatter } = matter(content)
+	const currentFileSlug = frontmatter.canonicalURL.replace(slugRegex, '')
+
+	for (const otherFile of files) {
+		const otherContent = readFileSync(otherFile, 'utf-8')
+		const { data: otherFrontmatter } = matter(otherContent)
+		const otherFileSlug = otherFrontmatter.canonicalURL.replace(slugRegex, '')
+
+		if (
+			currentFileSlug !== otherFileSlug &&
+			otherFrontmatter.tags &&
+			frontmatter.tags &&
+			otherFrontmatter.tags.some(tag => frontmatter.tags.includes(tag))
+		) {
+			relatedArticles.push(otherFileSlug)
+		}
+	}
+
+	frontmatter.relatedArticles =
+		relatedArticles.length > 1 ? relatedArticles : []
+
+	const updatedFileContents = matter.stringify(content).trim()
+
+	const yamlString = `${updatedFileContents}\n---\n`
+
+	log(info(`${frontmatter.title}:`))
+	log(success(`>>> ${relatedArticles.length} related articles found.`))
+	log(success(`>>> Updating Article Contents`))
+
+	writeFileSync(file, yamlString)
+}
+```
+
+<div class='flex flex-col items-center gap-2'>
+<Image
+	alt='The gorgeous output in the terminal from running the relatedArticles script.'
+	class='object-cover'
+	fetchpriority='low'
+	height={300}
+	quality={100}
+	src={image1}
+	width={800}
+/>
+	<small>The gorgeous output in the terminal from running the relatedArticles script.</small>
+</div>
+
+Hell yeah boys! That is one sexy script and clearly a frontend developer made that terminal output. Winning awards with UI like that!
+
+<Giphy giphyId="8lp6CW7K2fdDGn3xCQ" />
+
+## Adding Related Articles to the Plop Generator
+
+Not gonna lie honestly I could be done. I mean that's a pretty solid script; however what about when I am using the [PlopJS](https://plopjs.com/) generator for creating a new article? I already load the `tags` into the prompts so I can select from present tags...could I populate the related articles on generation?
+
+> You bet your sweet ass I can!
+
+```diff caption="Adding generation of related articles to new article generation." title="scripts/plopfile.mjs"
++import { sync } from 'glob'
++import { readFileSync } from 'fs'
++import matter from 'gray-matter'
+
+// ...
+
+export default function (
+	/** @type {import('plop').NodePlopAPI} */
+	plop
+) {
+	// ...
++	plop.setHelper('findRelatedArticles', params => {
++		const selectedTags = params.data.root.tags
++		const newArticleSlug = params.data.root.path
++		// TODO: Update this to include all sub-directories in future.
++		const files = sync('./src/content/articles/2024/**/*.mdx')
++		const relatedArticles = []
++
++		files.forEach(file => {
++			const content = readFileSync(file, 'utf-8')
++			const { data } = matter(content)
++			const slug = data.canonicalURL.replace(/.*?(?=\d{4})/g, '')
++			if (
++				slug !== newArticleSlug &&
++				data.tags.some(tag => selectedTags.includes(tag))
++			) {
++				relatedArticles.push(slug)
++			}
++		})
++
++		return relatedArticles.length > 1
++			? relatedArticles
++					.map((str, idx) => {
++						if (idx === 0) return `\n- ${str}`
++						return `- ${str}`
++					})
++					.join('\n')
++			: []
++	})
+	plop.setGenerator('article', {
+		actions: data => {
+			const year = new Date().getFullYear()
+			const [date] = new Date().toLocaleString().split(',')
+			data.createdAt = date
++			data.path = `${year}/${data.title
++				.replace(/[^a-zA-Z0-9]+/g, '-')
++				.toLowerCase()}`
+			data.year = year
+			return [
+				{
+					path: '../src/content/articles/{{year}}/{{ dashCase title }}/index.mdx',
+					templateFile: '../templates/article.mdx.hbs',
+					type: 'add',
+				},
+			]
+		},
+		// ...
+	})
+}
+```
+
+```diff caption="Using the custom 'findRelatedArticles' helper." title="templates/article.mdx.hbs"
+---
+archived: false
+author: cody-brunner
+canonicalURL: https://blog.codybrunner.com/{{year}}/{{dashCase title}}
+categories: {{arrayToYAML categories}}
+coverImage:
+  alt: "// TODO"
+  src: ./hero.webp
+createdAt: {{createdAt}}
+description: {{description}}
+draft: true
+featured: false
++relatedArticles: {{findRelatedArticles}}
+tags: {{arrayToYAML tags}}
+title: {{title}}
+---
+```
+
 ## Wrap Up
+
+This turned out to be a really fun feature write and will be a lot more convenient to manage in the future with the `relatedArticles.mjs` script. I have plans to bring back my older articles in an archived state in the future and this script will make adding all those articles to the relational graph so much easier.
+
+I am interested to see as the number of articles grow how much time the script begins to take. There are three nested loops in this script so it's not exactly performant by any stretch. How's that saying go?
+
+> Make it right. Make it work. Make it fast.
+
+I am somewhere between right and work...bugs will be found...in production! I might write an article in the future about performance tuning the script or hell I might even just take a stab at rewriting the script in Go! I mean performance win by switching languages FTW!
 
 <Signature />
