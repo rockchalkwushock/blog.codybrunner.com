@@ -29,6 +29,7 @@ const technologyTags = [
 	{ name: 'Qwik', value: 'qwik' },
 	{ name: 'Qwik-City', value: 'qwik-city' },
 	{ name: 'ReactJS', value: 'reactjs' },
+	{ name: 'Scripting', value: 'scripting' },
 	{ name: 'SSH', value: 'ssh' },
 	{ name: 'Tailwind', value: 'tailwindcss' },
 	{ name: 'TS', value: 'typescript' },
