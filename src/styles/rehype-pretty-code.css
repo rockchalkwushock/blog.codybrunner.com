@@ -1,5 +1,9 @@
 @import './tailwind.css';
 
+kbd {
+  @apply border rounded border-accent-500 px-1 py-0.5 text-sm bg-accent-100 dark:bg-accent-100/10;
+}
+
 figure[data-rehype-pretty-code-figure] {
   @apply relative;
 }

@@ -1,0 +1,411 @@
+---
+archived: false
+author: cody-brunner
+canonicalURL: https://blog.codybrunner.com/2024/setting-up-and-securing-a-raspberry-pi
+categories:
+- technology
+coverImage:
+  alt: "Setting up a new Raspberry Pi."
+  src: ./hero.webp
+createdAt: 01/26/2024
+description: A guide for setting up a new Raspberry Pi and doing so securely for future projects.
+draft: true
+featured: false
+publishedAt: 02/22/2024
+relatedArticles: []
+tags:
+- iot
+- raspberry-pi
+- ssh
+title: Setting Up And Securing A Raspberry Pi
+---
+
+import { Image } from 'astro:assets'
+import Signature from '~/components/signature.astro'
+import heroImage from './hero.webp'
+import image1 from './imager-1.jpg'
+import image2 from './imager-2.jpg'
+import image3 from './imager-3.jpg'
+import image4 from './imager-4.jpg'
+
+# {frontmatter.description}
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+		alt={frontmatter.coverImage.alt}
+		class='object-cover'
+		fetchpriority='high'
+		height={400}
+		quality={100}
+		src={heroImage}
+		width={800}
+	/>
+	<small>{frontmatter.coverImage.alt}</small>
+</div>
+
+## Introduction
+
+Before I found my way into web development I received an associates in robotics and worked as a robotic technician for a year. In that time I really found a soft spot in my heart for IoT and dinking around with Raspberry Pi boards. Recently on [X](https://x.com) (formerly Twitter) I have seen developers I follow posting about their hip new CO₂ monitors they have in their office. Personally it makes me chuckle a lot, but it got me thinking:
+
+> I bet I could build my own CO₂ monitor using a Pi.
+
+Some quick Googling and looking for the sensor I would need and I was ready to being...albeit impatiently waiting for Amazon to ship the sensor to Colombia. This would give me ample time to figure out the next step and the bigger question:
+
+> Can I write the embedded program in my new found love language: Go?
+
+### What I want to achieve
+
+- Write a program in Go for interacting with the CO₂ sensor
+- Write an API using [Fiber](https://docs.gofiber.io/)
+- Write a CLI program for interacting with the API
+- Write a Dashboard using [templ](https://pkg.go.dev/github.com/a-h/templ) & [htmx](https://htmx.org/) that I can access on the local network
+
+### The Hardware I will use
+
+// TODO: Make these links Affiliate links
+
+- [Raspberry Pi Zero 2 W](https://www.amazon.com/dp/B0BHD2S5MJ?psc=1&ref=ppx_yo2ov_dt_b_product_details)
+- [JESSINIE MH-Z19B Infrared Carbon Dioxide Sensor](https://www.amazon.com/gp/product/B0B7MBM7RN/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&psc=1)
+- [BME688 Environmental Sensor](https://www.amazon.com/dp/B0BZQB5QR7?ref=ppx_yo2ov_dt_b_product_details&th=1)
+
+## Getting Started
+
+> **DISCLAIMER**: Go make yourself some coffee, maybe a sandwich because this post is going to be a long one and there will be a lot of rebooting the Pi.
+
+First off I downloaded the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) to use for writing the image of Raspberry Pi OS to the micro SD card. I found at the time of writing that the options available from the Imager were all legacy so I went over to [OS Download Page](https://www.raspberrypi.com/software/operating-systems/#raspberry-pi-os-64-bit) and downloaded the latest 64-bit version of the OS, specifically the Lite version (no GUI). I could then load that image via the "Custom" option.
+
+```shell caption="From terminal on macOS"
+brew update
+brew install raspberry-pi-imager
+```
+
+I also wanted to do some housekeeping items prior to booting from the SD card for the first time. By pressing the combo of <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>X</kbd> you can open an options menu for configuring certain elements of the Pi before writing the image to the SD card. With the operating system on the micro SD I could now power on the Pi with the SD card inserted and get to work on setting up the Pi.
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+	alt='Selecting the correct device in Raspberry Pi Imager.'
+	class='object-cover'
+	fetchpriority='low'
+	height={300}
+	quality={100}
+	src={image1}
+	width={800}
+/>
+	<small>Selecting the correct device in Raspberry Pi Imager.</small>
+</div>
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+	alt='Selecting the "Use custom" option for the downloaded image.'
+	class='object-cover'
+	fetchpriority='low'
+	height={300}
+	quality={100}
+	src={image2}
+	width={800}
+/>
+	<small>Selecting the "Use custom" option for the downloaded image.</small>
+</div>
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+	alt='The General setting screen for OS Customization.'
+	class='object-cover'
+	fetchpriority='low'
+	height={300}
+	quality={100}
+	src={image3}
+	width={800}
+/>
+	<small>The General setting screen for OS Customization.</small>
+</div>
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+	alt='Enabling SSH through the OS Customization screen'
+	class='object-cover'
+	fetchpriority='low'
+	height={300}
+	quality={100}
+	src={image4}
+	width={800}
+/>
+	<small>Enabling SSH through the OS Customization screen</small>
+</div>
+
+
+### Running Local Updates
+
+With SSH already enabled & the WiFi credentials present there is no need for anything but a power cable for the Pi. As soon as the Pi is on it will attempt to connect to the network and using the username, password, and hostname that I setup using the OS Customization tool in the Raspberry Pi Imager I can open a connection from my Macbook Pro directly to the Pi.
+
+```shell caption="From terminal on macOS"
+ssh cody@zero-w.local
+# [yes] to fingerprinting
+# insert password
+```
+
+First thing to always do is run local updates on the Pi.
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo apt update -y && sudo apt upgrade -y && sudo apt autoremove -y
+sudo apt full-upgrade
+sudo reboot
+```
+
+### Setting a Static IP
+
+I want to make sure that I never end up in the situation where my router reboots and dynamically assigns a new IP to the Pi. To fix that problem we can assign a static IP to the Pi using the DHCPCD config. I needed to run the following commands on the Pi to get the necessary IPs.
+
+```shell caption="From Raspberry Pi OS via SSH"
+hostname -I # Raspberry Pi IP
+ip r | grep default # Router IP
+grep "nameserver" /etc/resolv.conf # DNS IP
+sudo cp /etc/dhcpcd.conf /etc/dhcpcd.conf.bak
+sudo nano /etc/dhcpcd.conf
+```
+
+> **NOTE**: Always create a backup `.bak` of any config file you plan on working with for CYA purposes!
+
+Since the Pi will be operating over WiFi I needed to make sure I was targeting the `wlan0` interface and then plug in the correct IPs where they need to go. For bonus I added Cloudflare and Google as fallback domain servers.
+
+```plaintext title="/etc/dhcpcd.conf"
+interface wlan0
+static domain_name_servers=DNS IP 1.1.1.1 8.8.8.8
+static ip_address=RASPBERRY PI IP/24
+static routers=ROUTER IP
+```
+
+> **NOTE** How to exit `nano`:
+> <kbd>Ctrl</kbd> + <kbd>X</kbd> then
+> <kbd>Y</kbd> & finally
+> <kbd>Return</kbd>
+
+And from here I reboot the Pi to make sure the changes are applied.
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo reboot
+```
+
+### Setting Up & Securing SSH
+
+Since I will be interfacing with the Pi solely through SSH I feel a lot more comfortable securing that so I am the only one who can be accessing the Pi. IoT in general is setup pretty insecurely and since this will be setting on my home network I'd rather not be leaving an access point open for the hacker man or hacker woman to abuse.
+
+```shell caption="From terminal on macOS"
+ssh cody@zero-w.local
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+sudo nano /etc/ssh/sshd_config
+```
+
+This is honestly a trivial change because someone can just be scanning to see what ports are open. It's as they say "Security through Obscurity" to change the default port:
+
+```diff title="/etc/ssh/sshd_config"
+- # Port 22
++ Port 122
+```
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo sshd -t # test the ssh config
+sudo service sshd restart
+sudo reboot
+```
+
+After performing another reboot to SSH into the Pi I needed to add the `-p <port>` flag to my command:
+
+```shell caption="From terminal on macOS"
+ssh cody@zero-w.local -p 122
+```
+
+### Switching to SSH Keys for Authentication
+
+Now we get into the more pertinent security updates. I don't want to be using a password to login and I use SSH Keys for work and personal related items so why should this be any different. Generating keys are also super easy and fast.
+
+```shell caption="From terminal on macOS"
+# Remove all lines in .ssh/known_hosts pertaining to the hostname given
+ssh-keygen -R zero-w.local
+# Create keys
+# Add and confirm passphrase
+ssh-keygen -f ~/.ssh/pi-zero -t ed25519 -C "CO2 Monitor"
+# Add private key to Keychain
+ssh-add --apple-use-keychain ~/.ssh/pi-zero
+# Check that pi-zero key is loaded into the agent
+ssh-add -l
+```
+
+### Update macOS SSH config
+
+Configuring my SSH config locally is a really nice win. For example I have [GitHub](https://github.com) configured for my personal account so that whenever github.com is encountered it knows where to look for the keys and the authentication is handled seamlessly:
+
+```ssh-config caption="Configure SSH on macOS" title="~/.ssh/config"
+Host *
+	AddKeysToAgent yes
+	UseKeychain yes
+
+Host github
+	HostName github.com
+	IdentityFile ~/.ssh/github
+	IdentitiesOnly yes
+	User git
+
+Host zero
+	HostName zero-w.local
+	IdentityFile ~/.ssh/pi-zero
+	IdentitiesOnly yes
+	Port 122
+	User cody
+```
+
+Now for future sessions I can run the command `ssh zero` and as long as the Pi is turned on and on the network I will have an active session. The last thing to do before attempting this is to copy over the keys to the Pi:
+
+```shell caption="From terminal on macOS"
+# With the Pi running copy the keys from macOS to Raspberry Pi OS
+ssh-copy-id -i ~/.ssh/pi-zero -p 122 cody@zero-w.local
+# Verify keys work
+ssh zero
+# [yes] to fingerprinting
+```
+
+Once I was back into the Pi to confirm everything was good I found the below file and printed out what was in it. The contents should match the `.pub` keys.
+
+```shell caption="From Raspberry Pi OS via SSH"
+cat ~/.ssh/authorized_keys # should match .pub keys on macOS
+sudo reboot
+```
+
+### Further Security Hardening of SSH
+
+```shell caption="From terminal on macOS"
+ssh zero
+```
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo nano /etc/ssh/sshd_config
+```
+
+```ssh-config caption="Security changes to sshd_config" title="/etc/ssh/sshd_config"
+# Black listed users
+DenyUsers pi
+# White listed users
+AllowUsers cody
+# Use SSH key-based authentication
+PubkeyAuthentication yes
+# Disable root login
+PermitRootLogin no
+# Set the SSH port
+Port 122
+# Disable unnecessary forwarding
+AllowTcpForwarding no
+X11Forwarding no
+# Listen on IPv4 only
+AddressFamily inet
+# Other common security settings
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr
+ClientAliveCountMax 2
+ClientAliveInterval 300
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com
+MaxAuthTries 3
+PermitEmptyPasswords no
+PermitUserEnvironment no
+Protocol 2
+
+# Allow client to pass locale environment variables
+AcceptEnv LANG LC_*
+
+# override default of no subsystems
+Subsystem	sftp	/usr/lib/openssh/sftp-server
+```
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo sshd -t # test the ssh config
+sudo service sshd restart
+sudo reboot
+```
+
+```shell caption="From terminal on macOS"
+ssh zero
+```
+
+### Adding 2FA to SSH
+
+This was a new step to me, but I wanted to give it a try. Using [`libpam-google-authenticator`](https://github.com/google/google-authenticator-libpam) I can setup two factor authentication with the authenticator app of my choice so that after the ssh keys authentication has finished I will be prompted for a verification code:
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo apt update -y && sudo apt upgrade -y
+sudo apt install libpam-google-authenticator
+google-authenticator
+# answer yes and use your 2FA App to scan the QR code
+# copy your backup codes and store them somewhere safe
+# answer yes to the rest of the prompts
+cat .google-authenticator
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# " RATE_LIMIT X XX XXXXXXXXXX
+# " WINDOW_SIZE XX
+# " DISALLOW_REUSE XXXXXXXX
+# " TOTP_AUTH
+# backup_code_#1
+# backup_code_#2
+# backup_code_#3
+# backup_code_#4
+# backup_code_#5
+sudo cp /etc/pam.d/sshd /etc/pam.d/sshd.bak
+sudo nano /etc/pam.d/sshd
+```
+
+At the bottom of `/etc/pam.d/sshd` add the following line:
+
+```diff title="/etc/pam.d/sshd"
++ auth required pam_google_authenticator.so
+```
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo nano /etc/ssh/sshd_config
+```
+
+These are the last items that needed to be added to the `sshd_config`. They enable the necessary elements for 2FA to work correctly. Misconfigure this and you will lock yourself out!
+
+```ssh-config title="/etc/ssh/sshd_config"
+# Enable 2FA Challenge
+AuthenticationMethods publickey,keyboard-interactive
+ChallengeResponseAuthentication yes
+PasswordAuthentication yes
+UsePAM yes
+```
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo nano /etc/pam.d/sshd
+```
+
+And finally I just needed to comment out the below line and I was ready to give this a spin:
+
+```diff title="/etc/pam.d/sshd"
+- @include common-auth
++ # @include common-auth
+```
+
+But still be smart and test the config before restarted...and have another session open in the off chance you did make a fat finger bug!
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo sshd -t # test the ssh config
+sudo service sshd restart
+```
+
+```shell caption="From as second terminal on macOS"
+ssh zero
+# Verification Code: XXXXXX
+```
+
+### Adding Firewall Protection
+
+```shell caption="From Raspberry Pi OS via SSH"
+sudo apt update -y && sudo apt upgrade -y
+sudo apt install ufw
+sudo ufw allow from RASPBERRY PI IP to any port 122 proto tcp
+sudo ufw enable
+sudo ufw status
+sudo ufw logging on
+sudo reboot
+```
+
+## Wrap Up
+
+<Signature />
