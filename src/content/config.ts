@@ -47,6 +47,7 @@ const TECH_TAGS = [
 	'qwik',
 	'qwik-city',
 	'reactjs',
+	'scripting',
 	'ssh',
 	'tailwindcss',
 	'typescript',
