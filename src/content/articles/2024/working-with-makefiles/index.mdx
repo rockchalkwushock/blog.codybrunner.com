@@ -1,17 +1,22 @@
 ---
 archived: false
 author: cody-brunner
-canonicalURL: https://blog.codybrunner.com/2024/working-with-makefiles
+canonicalURL: 'https://blog.codybrunner.com/2024/working-with-makefiles'
 categories:
   - technology
 coverImage:
-  alt: Makefiles, making managing your application less crapy.
+  alt: 'Makefiles, making managing your application less crapy.'
   src: ./hero.webp
 createdAt: 01/16/2024
-description: In my journey into learning Go I have been learning how to use Makefiles within my Go projects. I had never worked with Makefiles before and this post will touch on how to use them.
-draft: true
+description: >-
+  In my journey into learning Go I have been learning how to use Makefiles
+  within my Go projects. I had never worked with makefiles before and this post
+  will touch on how to use them.
+draft: false
 featured: false
 publishedAt: 01/29/2024
+relatedArticles:
+  - 2024/going-to-the-gopher-side
 tags:
   - go
   - make
@@ -61,10 +66,11 @@ build:
   # Build the binary program and output it to bin/api
   go build -o bin/api
 
-# With the prerequisite of "build" make will determine if there
+# With the prerequisite of "build" `make` will determine if there
 # has been changes to the "build" target before executing the command
-# If there has then ./bin/api is new and make will run the program.
+# If there has then ./bin/api is new and `make` will run the program.
 # If not then there is no reason to recompile the program & execute it.
+# Instead `make` will just run the existing binary in ./bin/api
 run: build
   # Run the program
   ./bin/api
@@ -73,10 +79,10 @@ test:
   # Run the test suite in verbose mode
   go test -v ./...
 
-# .PHONY will prevent make from confusing the target with a file name.
+# .PHONY will prevent `make` from confusing the target with a file name.
 .PHONY clean
 clean:
-  @rm -rf ./bin/api
+  rm -rf ./bin/api
 ```
 
 And to execute the targets from the `makefile` we can call `make` + the target we wish to run.
@@ -84,7 +90,6 @@ And to execute the targets from the `makefile` we can call `make` + the target w
 ```bash
 make build
 make run
-make seed
 make test
 ```
 
@@ -106,6 +111,7 @@ test:
 
 ## Wrap Up
 
-There is honestly a whole lot more to `make` and `Makefiles`. This is what I have encountered while working with Go and kind of the basics I have adopted in my projects. If you really want a deep dive into this topic I highly suggest going through this free [tutorial](https://makefiletutorial.com/) or you can read the [GNU Make docs](https://www.gnu.org/software/make/manual/make.html).
+There is honestly a whole lot more to `make` and `makefiles`. This is what I have encountered while working with Go and kind of the basics I have adopted in my projects. If you really want a deep dive into this topic I highly suggest going through this free [tutorial](https://makefiletutorial.com/) or you can read the [GNU Make docs](https://www.gnu.org/software/make/manual/make.html).
 
 <Signature />
+
