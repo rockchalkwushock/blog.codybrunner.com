@@ -1,0 +1,283 @@
+---
+archived: false
+author: cody-brunner
+canonicalURL: 'https://blog.codybrunner.com/2024/deploying-astro-to-fly/static-deployments'
+categories:
+  - technology
+coverImage:
+  alt: Deploying Astro projects to Fly.io.
+  src: ./hero.webp
+createdAt: 01/08/2024
+description: A quick how-to guide on deploying your static Astro projects to Fly.io.
+draft: false
+featured: true
+publishedAt: 02/05/2024
+relatedArticles:
+  - 2024/from-nextjs-to-astro
+  - 2024/deploying-astro-to-fly/ssr-deployments
+  - 2024/adding-related-articles-with-astro-content-collections
+slug: 2024/deploying-astro-to-fly/static-deployments
+tags:
+  - astro
+  - fly
+title: 'Deploying Astro to Fly: Part 1'
+---
+
+import { Image } from 'astro:assets'
+import Signature from '~/components/signature.astro'
+import heroImage from './hero.webp'
+
+# {frontmatter.description}
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+		alt={frontmatter.coverImage.alt}
+		class='object-cover'
+		fetchpriority='high'
+		height={400}
+		quality={100}
+		src={heroImage}
+		width={800}
+	/>
+	<small>{frontmatter.coverImage.alt}</small>
+</div>
+
+## Introduction
+
+I have been a big fan of using [fly.io](https://fly.io) for hosting my projects for about the last two years now. Having been converted over to using Astro for most if not all JS related projects I looked into how to host my Astro projects on Fly. My blog and website are both Astro projects that are hosted on Fly.
+
+This will be a two part series; where in this first post we will look at how to deploy a static Astro project to Fly. In part two we will go over how to host a server-side rendered (SSR) Astro project on Fly.
+
+## Creating a new Astro project
+
+If you are not using [pnpm](https://pnpm.io) you can use the package manager of your choice. You can follow installation instructions [here](https://docs.astro.build/en/install/auto/#1-run-the-setup-wizard).
+
+```bash
+pnpm create astro@latest astro-project
+# Go ahead and say yes to every initial setup question
+cd astro-project
+```
+
+## Setting up Fly locally for deployment
+
+If you don't already have Fly installed you can follow the official documentation [here](https://fly.io/docs/hands-on/install-flyctl/) or if you too are on a Mac Homebrew is pretty solid option.
+
+```bash
+brew install flyctl
+flyctl auth signup
+```
+
+Once you have fly installed if you have an account already you can sign in. If not please signup using the CLI that will direct you to Fly's website. After you are logged in locally we can run `fly launch` with in the project directory to setup the necessary files and infrastructure for Fly. Unless you want to tweak any of the settings you can just answer "No" to the prompt:
+
+```bash
+fly launch
+
+Scanning source code
+Detected a NodeJS app
+Creating app in /Users/cody/Developer/Personal/astro-project
+We are about to launch your NodeJS app on Fly.io. Here is what you are getting:
+
+Organization: rockchalkwushock       (fly launch defaults to the personal org)
+Name:         astro-project          (derived from your directory name)
+Region:       Bogotá, Colombia      (this is the fastest region for you)
+App Machines: shared-cpu-1x, 1GB RAM (most apps need about 1GB of RAM)
+Postgres:     <none>                 (not requested)
+Redis:        <none>                 (not requested)
+
+? Do you want to tweak these settings before proceeding? No
+Created app 'astro-project' in organization 'personal'
+Admin URL: https://fly.io/apps/astro-project
+Hostname: astro-project.fly.dev
+installing: pnpm add -D @flydotio/dockerfile@latest
+Packages: +15
++++++++++++++++
+Progress: resolved 496, reused 445, downloaded 0, added 15, done
+
+devDependencies:
++ @flydotio/dockerfile 0.5.0
+
+Done in 3.1s
+     create  Dockerfile
+npm notice
+npm notice New minor version of npm available! 10.1.0 -> 10.2.5
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v10.2.5
+npm notice Run npm install -g npm@10.2.5 to update!
+npm notice
+Wrote config file fly.toml
+Validating /Users/cody/Developer/Personal/astro-project/fly.toml
+Platform: machines
+✓ Configuration is valid
+
+If you need custom packages installed, or have problems with your deployment
+build, you may need to edit the Dockerfile for app-specific changes. If you
+need help, please post on https://community.fly.io.
+
+Now: run 'fly deploy' to deploy your Node.js app.
+```
+
+## Updating Docker & Fly Configurations
+
+You will see that three new files are at the root of the project `.dockerignore`, `Dockerfile`, and `fly.toml` along with modifications to the `package.json` and `pnpm.lockfile`. We need to make some updates to the `Dockerfile` and `fly.toml` before we deploy. First though we need to grab the value of `Hostname` from the output of running `fly launch`. We will make use of that value in the `astro.config.mjs`.
+
+```diff title="astro.config.mjs"
+import { defineConfig } from 'astro/config'
+
+export default defineConfig({
++ site: "https://astro-project.fly.dev/"
+})
+```
+
+In the `Dockefile` we are going to make use of [GoStatic](https://hub.docker.com/r/pierrezemb/gostatic/), a static web server written in Go, to serve the static files that are output from the build step.
+
+```diff title="Dockerfile"
+# syntax = docker/dockerfile:1
+
+# Adjust NODE_VERSION as desired
+ARG NODE_VERSION=20.9.0
+FROM node:${NODE_VERSION}-slim as base
+
+LABEL fly_launch_runtime="Node.js"
+
+# Node.js app lives here
+WORKDIR /app
+
+# Set production environment
+ENV NODE_ENV="production"
+
+# Install pnpm
+ARG PNPM_VERSION=8.10.5
+RUN npm install -g pnpm@$PNPM_VERSION
+
+# Throw-away build stage to reduce size of final image
+FROM base as build
+
+# Install packages needed to build node modules
+- RUN apt-get update -qq && \
+- apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
++ RUN apt-get update -qq && \
++ apt-get install -y build-essential pkg-config python-is-python3
+
+# Install node modules
+COPY --link package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --prod=false
+
+# Copy application code
+COPY --link . .
+
+# Build application
+RUN pnpm run build
+
+# Remove development dependencies
+RUN pnpm prune --prod
+
+# Final stage for app image
+- FROM base
++ FROM pierrezemb/gostatic
+
+# Copy built application
+- COPY --from=build /app /app
++ COPY --from=build /app/dist /srv/http
+
+# Start the server by default, this can be overwritten at runtime
+- EXPOSE 3000
+
+- CMD [ "pnpm", "run", "start" ]
+```
+
+In the `fly.toml` our changes are based on what GoStatic is looking for as the port numbers, concurrency limits, etc.
+
+```diff title="fly.toml"
+# fly.toml app configuration file generated for astro-project on 2024-01-07T13:23:32-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "astro-project"
+primary_region = "bog"
+
+[build]
+
+- [http_service]
+-	internal_port = 3000
+-	force_https = true
+-	auto_stop_machines = true
+-	auto_start_machines = true
+-	min_machines_running = 0
+-	processes = ["app"]
+
++ [[services]]
++	http_checks = []
++	internal_port = 8043
++	processes = ["app"]
++	protocol = "tcp"
++	script_checks = []
++
++	[[services.concurrency]]
++		hard_limit = 25
++		soft_limit = 20
++		type = "connections"
++
++	[[services.ports]]
++		handlers = ["http"]
++		port = 80
++		force_https = true
++
++	[[services.ports]]
++		handlers = ["tls", "http"]
++		port = 443
++
++	[[services.tcp_checks]]
++		grace_period = "1s"
++		interval = "15s"
++		restart_limit = 0
++		timeout = "2s"
+
+[[vm]]
+	cpu_kind = "shared"
+	cpus = 1
+	memory_mb = 1024
+```
+
+## Time for Deployment
+
+Now we can run `fly deploy` and sit back to wait for the magic to happen!
+
+```bash
+fly deploy
+==> Verifying app config
+Validating /Users/cody/Developer/Personal/astro-project/fly.toml
+Platform: machines
+✓ Configuration is valid
+--> Verified app config
+==> Building image
+Remote builder fly-builder-throbbing-bush-1757 ready
+Remote builder fly-builder-throbbing-bush-1757 ready
+==> Building image with Docker
+--> docker host: 20.10.12 linux x86_64
+[+] Building 44.8s (21/21) FINISHED
+# #########################
+# ... Lots of Docker output
+# #########################
+Watch your deployment at https://fly.io/apps/astro-project/monitoring
+
+Provisioning ips for astro-project
+  Dedicated ipv6: ****:****:*::**:****
+  Shared ipv4: **.***.***.**
+  Add a dedicated ipv4 with: fly ips allocate-v4
+
+This deployment will:
+ * create 2 "app" machines
+
+No machines in group app, launching a new machine
+Creating a second machine to increase service availability
+Finished launching new machines
+-------
+ ✔ Machine 9080ee2df06258 [app] update finished: success
+-------
+
+Visit your newly deployed app at https://astro-project.fly.dev/
+```
+
+Finally you can just grab the link and visit your website! Too Easy!
+
+<Signature />

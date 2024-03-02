@@ -1,0 +1,100 @@
+---
+archived: false
+author: cody-brunner
+canonicalURL: 'https://blog.codybrunner.com/2024/going-to-the-gopher-side'
+categories:
+  - technology
+coverImage:
+  alt: From the chaos of JavaScript to the joy of Go.
+  src: ./hero.webp
+createdAt: 01/13/2024
+description: >-
+  The chaos that is the JavaScript/TypeScript ecosystem has become too much to
+  bear in my opinion. I have become unhappy with my direction in the tech
+  industry and in late 2023 made the decision to begin teaching myself Go and
+  pivoting my career out of the Frontend & away from JavaScript.
+draft: false
+featured: false
+publishedAt: 01/22/2024
+relatedArticles:
+  - 2024/working-with-makefiles
+  - 2024/from-nextjs-to-astro
+  - 2024/adding-related-articles-with-astro-content-collections
+tags:
+  - go
+  - javascript
+  - nodejs
+  - typescript
+title: Going to the Gopher Side
+---
+
+import { Image } from 'astro:assets'
+import Giphy from '~/components/giphy.astro'
+import Signature from '~/components/signature.astro'
+import heroImage from './hero.webp'
+import image1 from './ackchyually.jpeg'
+
+# {frontmatter.description}
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+		alt={frontmatter.coverImage.alt}
+		class='object-cover'
+		fetchpriority='high'
+		height={400}
+		quality={100}
+		src={heroImage}
+		width={800}
+	/>
+	<small>{frontmatter.coverImage.alt}</small>
+</div>
+
+## Introduction
+
+If I had a penny for how many times I have been told that I would be able to move into a more full stack or even backend role after accepting a Frontend position...I would have a lot of pennies. After five years of working pretty much exclusively on the frontend and in the JavaScript ecosystem I am over it. I want out. I want to solve _actual_ problems, not write the same UI with a different iteration of the same bloated JS frameworks that make me want to hang myself (in ASCII art).
+
+In years past I have experimented with Elixir and I do love the language as well as Phoenix and Phoenix Liveview. So why not double down on Elixir? Albeit the hype around Elixir has definitely grown a lot. The problem still remains that there are not many job openings that hire for new developers in that space. Most job postings I find are for Seniors, maybe mid-level if I am lucky, and those positions are normally located in the EU. I am sure people will argue that it's no different for Go, but I am bullish on this language due to how prevalent its usage is in DevOps and tooling. Hell just in the JS ecosystem you can find tools like [esbuild](https://esbuild.github.io/) that were written in Go. Things like [caddy](https://caddyserver.com/), [tailscale](https://tailscale.com/), & [traefik](https://traefik.io/) are all written in Go as well. My decision ultimately came down to [Rust](https://www.rust-lang.org) or [Go](https://go.dev) and I decided that it would be faster and more beneficial to my career to learn Go. Cue the screams of the Rust Andies:
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+	alt='Umm well ackchyually Rust is better.'
+	class='object-cover'
+	fetchpriority='low'
+	height={300}
+	quality={100}
+	src={image1}
+	width={300}
+/>
+	<small>Umm well ackchyually Rust is better.</small>
+</div>
+
+## So why choose Go?
+
+Go has a great community around it and the tooling is phenomenal. It reads, at least in my opinion, easier than TypeScript. Coming from the JavaScript ecosystem where I need to install 80 dependencies to even get started doing the most basic of things it is an absolute breath of fresh air with how great the standard library is in Go.
+
+One thing I noticed coming from TypeScript is just how fast Go is when it comes to analyzing my code and telling me their are problems. The type inference is next level. Oh and did I mention their is a formatter builtin to the language! No need to install Prettier and setup a config...oh boy next point say it with me class:
+
+> NO MORE CONFIG FATIGUE!!!
+
+At this juncture the only thing I have really setup in a Go project is a `Makefile` which in all honesty I'd never worked with before so there was some learning involved there (psst, article coming soon on this). You can look at the [repository](https://github.com/rockchalkwushock/blog.codybrunner.com) for this blog and find 15 files at the root of which 13 have to deal with configuring the project. What in the hell! Why just why??? In a typical Go project you will basically see these files at the root and that's it `.gitignore`, `go.mod`, `go.sum`, `main.go`, and `Makefile`.
+
+Back to Rust for a second. Besides the fact that there aren't many jobs for junior Rust developers floating around on the intertubes the actual number one reason why I chose Go over Rust:
+
+> Simplicity over Complexity
+
+I believe it was a year ago that I dabbled around with learning Rust. When I look at a script written in Rust this is what is going on in my head:
+
+<Giphy giphyId="4JVTF9zR9BicshFAb7" />
+
+I know there are elements to Rust that make it a better and safer language than Go; however the amount of crap you have to go through to get there..."hell ta tha nah ta tha nah nah nah!"
+
+Actually something I am really excited about is to do more embedded programming and work with my Raspberry Pi. I have already begun work on a small project using Go and Raspberry Pi. I will release it here as a series on my blog.
+
+## Wrap Up
+
+I have come to really really love programming in Go. My love of programming is back and that is amazing after the last year or two of hating what I do. I still am writing UI and JavaScript in my day job, but I am actively working in Go in my spare time.
+
+In the coming weeks and months most of this blog, at least when it comes to tech, will be on my progress and projects around Go. There will still be sprinklings of React, Astro, etc, but definitely plan on reading more about the joy of programming in Go.
+
+<Signature />
+
