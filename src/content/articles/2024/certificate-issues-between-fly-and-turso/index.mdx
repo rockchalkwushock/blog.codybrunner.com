@@ -1,0 +1,73 @@
+---
+archived: false
+author: cody-brunner
+canonicalURL: https://blog.codybrunner.com/2024/certificate-issues-between-fly-and-turso
+categories:
+- technology
+coverImage:
+  alt: "Fly.io + Turso = ♥️ once you solve those certificate issues."
+  src: ./hero.webp
+createdAt: 3/10/2024
+description: That time I ran into issues with my certificates being invalid leading to problems communicating between Fly.io and my Turso database.
+draft: true
+featured: false
+publishedAt: 03/18/2024
+relatedArticles:
+- 2024/deploying-astro-to-fly/ssr-deployments
+- 2024/deploying-astro-to-fly/static-deployments
+tags:
+- docker
+- fly
+- turso
+title: Certificate Issues Between Fly & Turso
+---
+
+import { Image } from 'astro:assets'
+import Signature from '~/components/signature.astro'
+import heroImage from './hero.webp'
+
+# {frontmatter.description}
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+		alt={frontmatter.coverImage.alt}
+		class='object-cover'
+		fetchpriority='high'
+		height={400}
+		quality={100}
+		src={heroImage}
+		width={800}
+	/>
+	<small>{frontmatter.coverImage.alt}</small>
+</div>
+
+## Introduction
+
+I am currently writing a personal finance tracker app using [Go](https://go.dev/), [Htmx](https://htmx.org/), [Tailwind](https://tailwindcss.com/), and [Turso](https://turso.tech/). When setting the application up to initially deploy to [Fly.io](https://fly.io/) I ran into the following error message:
+
+```shell
+failed to execute SQL: INSERT INTO users(email, first_name, id, last_name, password_hash) VALUES(?,?,?,?,?) RETURNING email, first_name, id, last_name, modified_at
+Post "https://[DATABASE].turso.io/v2/pipeline": tls: failed to verify certificate: x509: certificate signed by unknown authority
+```
+
+## The Solution
+
+After two days of troubleshooting on my own and asking questions in the Turso Discord `@athos` came up with the solution. I honestly would never have guessed this so kudos to him! At the time of writing when generating the `Dockerfile` to deploy to Fly using `fly launch` the boilerplate that comes back uses [golang:1.22-bookworm](https://hub.docker.com/layers/library/golang/1.22-bookworm/images/sha256-46a86b411554728154e56f9719426a47e5ded3cab7adb1ecb22a988f486e99ae?context=explore) & [debian:bookworm](https://hub.docker.com/layers/library/debian/bookworm/images/sha256-fc27237003ad8ffa4608590057eed4e1db8ce6098434b5ecda23f533a5b12e56?context=explore) as the base images. I am no expert when it comes to Docker, especially building custom images. The problem ended up being that either [`ca-certificates`](https://github.com/openSUSE/ca-certificates) was not installed in the debian image or that the certificates were out of date. Simply adding the below fixed the problem so Turso would accept the incoming request to my database instance:
+
+```diff caption="" title="Dockerfile"
+FROM debian:bookworm
+
++ # Need to add ca-certificates or will see the below error:
++ # tls: failed to verify certificate: x509: certificate signed by unknown authority
++ RUN apt-get update && apt-get install -y ca-certificates
++ RUN update-ca-certificates
+
+COPY --from=builder /run-app /usr/local/bin/
+CMD ["run-app"]
+```
+
+## Wrap Up
+
+I hope this will help someone out there on the intertubes who runs into a similar issue!
+
+<Signature />
