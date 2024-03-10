@@ -1,0 +1,306 @@
+---
+archived: false
+author: cody-brunner
+canonicalURL: 'https://blog.codybrunner.com/2024/writing-a-http-server-with-go'
+categories:
+  - technology
+coverImage:
+  alt: A Go powered HTTP Server.
+  src: ./hero.webp
+createdAt: 01/19/2024
+description: >-
+  Writing a simple HTTP Server using only what is provided via the Go Standard
+  Library.
+draft: true
+featured: true
+publishedAt: 03/11/2024
+relatedArticles:
+  - 2024/working-with-makefiles
+  - 2024/going-to-the-gopher-side
+tags:
+  - go
+title: Writing a HTTP Server with Go
+---
+
+import { Image } from 'astro:assets'
+import Signature from '~/components/signature.astro'
+import heroImage from './hero.webp'
+
+# {frontmatter.description}
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+		alt={frontmatter.coverImage.alt}
+		class='object-cover'
+		fetchpriority='high'
+		height={400}
+		quality={100}
+		src={heroImage}
+		width={800}
+	/>
+	<small>{frontmatter.coverImage.alt}</small>
+</div>
+
+## Introduction
+
+The beautiful thing of Go, in my opinion, is that you really don't need to reach for external packages, like at all. In this article we'll be writing a simple HTTP Server using only what is provided via the Go Standard Library. This HTTP Server will be a simple JSON Server that will respond to the following routes:
+
+- `DELETE /todos/{id}`
+- `GET /`
+- `GET /todos`
+- `GET /todos/{id}`
+- `POST /todos`
+- `PUT /todos/{id}`
+
+
+## Setting Up The Project
+
+We will be making use of `go@1.22.X` and it's important you are using this version for some of the newer features we'll be using.
+
+```shell
+mkdir json-server
+cd json-server
+go mod init json-server
+touch .tool-versions main.go makefile
+echo "golang 1.22.0" >> .tool-versions
+```
+
+```make caption="Our simple makefile for running our server." title="makefile"
+run: build
+	@./bin/app
+
+build:
+	@go build -v -o ./bin/app main.go
+```
+
+```go caption="Our initial server configuration." title="main.go"
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
+func main() {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "GET /\n")
+	})
+
+	if err := http.ListenAndServe("localhost:8080", mux); err != nil {
+		log.Fatalf("Server failed to open: %v", err)
+	}
+}
+```
+
+```shell
+make run
+```
+
+So I just recently found out about the [Thunder Client VSCode Extensions](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client) and I'm really enjoying it. I'm going to be using this to test our HTTP Server. You can choose to use [Postman](https://www.postman.com/) or any other HTTP Client you prefer. Navigating to `localhost:8080` will return the following:
+
+```shell
+GET /
+```
+
+## Adding our Todo Domain
+
+Our model for our Todos will be pretty simple when a todo is created we will timestamp it. We need a way to mark it as done. A way to uniquely identify the todo. The client can tell us what the todo is about with `Title` and whenever we update the todo we can timestamp that as well.
+
+```go caption="Our Todo model" title="main.go"
+type (
+	Todo struct {
+		CreatedAt 	time.Time  	`json:"created_at"`
+		Done      	bool       	`json:"done"`
+		ID        	int        	`json:"id"`
+		Title     	string     	`json:"title"`
+		UpdatedAt 	*time.Time 	`json:"updated_at"`
+	}
+)
+```
+
+## Adding our Todos
+
+I think the best way to do this is get some code up and then explain what is going on here. Below are there changes made to our `main.go` file. We added the `POST /todos` endpoint and the corresponding logic for creating a todo.
+
+```diff caption="Our Todos slice" title="main.go"
+package main
+
+import (
++	"encoding/json"
+	"fmt"
++	"io"
+	"log"
+	"net/http"
++	"sync"
++	"time"
+)
+
+func main() {
+-	mux := http.NewServeMux()
++ var (
++		mux 		= http.NewServeMux()
++		todos 	= make(map[int]*Todo)
++		todoMu 	= sync.Mutex
++)
+
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "GET /\n")
+	})
+
++	mux.HandleFunc("POST /todos", func(w http.ResponseWriter, r *http.Request) {
++		var t Todo
++		body, err := io.ReadAll(r.Body)
++		if err != nil {
++			http.Error(w, "Error reading request body", http.StatusInternalServerError)
++			return
++		}
++		if err := json.Unmarshal(body, &t); err != nil {
++			http.Error(w, "Error parsing request body", http.StatusBadRequest)
++			return
++		}
++
++		todoMu.Lock()
++		defer todoMu.Unlock()
++
++		t.ID = len(todos) + 1
++		t.CreatedAt = time.Now()
++		t.Done = false
++		t.UpdatedAt = &t.CreatedAt
++		todos[t.ID] = &t
++		w.Header().Set("Content-Type", "application/json")
++		w.WriteHeader(http.StatusCreated)
++		json.NewEncoder(w).Encode(t)
++	})
+
+	if err := http.ListenAndServe("localhost:8080", mux); err != nil {
+		log.Fatalf("Server failed to open: %v", err)
+	}
+}
+```
+
+So let's break this down piece by piece to better understand what is going on. First up we have the map of `todos` that we have created:
+
+```go
+var (
+	todos 	= make(map[int]*Todo)
+)
+```
+
+In Go the `make` function is used to create a new map. The typing explains that the keys of our map will be a number and the values will be a pointer to our `Todo` struct. By using `make` we create an empty map at the beginning of our program and in doing that Go has allocated memory for the map. To understand more about `make` and maps checkout [Go by Example](https://gobyexample.com/maps).
+
+The next thing we did was create mutex.
+
+```go
+var (
+	todoMu = sync.Mutex
+)
+```
+
+> Yeah I know what the hell is mutex!?!
+
+This was definitely new for me coming from JS/TS land. A mutex, in the most basic and not correct use case, is a state management tool. In reality it's a lot more than that because it allows us to safely access data across multiple go routines. It does this be _locking_ the door before doing work effectively blocking any other routine from accessing the data until it _unlocks_ the door. We will make use of `todoMu` inside our `HandlerFunc` calls when we want to mutate the `todos` map.
+
+Now on to the meat and potatoes of creating a todo. As of Go version `1.22` we can now specify the HTTP verb as well as parameters in the pattern for the request. So now we can write things like the following:
+
+- `GET /todos`
+- `GET /todos/{id}`
+- `POST /todos`
+
+Note the format for writing parameters. It's important that this is the format or when trying to access the param using `r.PathValue("your_param_here")` you will get back nothing.
+
+```go
+	mux.HandleFunc("POST /todos", func(w http.ResponseWriter, r *http.Request) {
+		var t Todo
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
+		}
+		if err := json.Unmarshal(body, &t); err != nil {
+			http.Error(w, "Error parsing request body", http.StatusBadRequest)
+			return
+		}
+		// ...
+	})
+```
+
+In the first half of our handler we are handing the request body. In the Thunder Client extension you can select `POST`, add `http://localhost:8080/posts` as the url, select the `Body` tab and then the `JSON` tab. This is where we can add the _body_ of our request that `io.ReadAll` is going to attempt to read. If for whatever reason the body was malformed, etc the function call will return and error and we can respond with a 500.
+
+Go includes it's own package for working with JSON so we can reach for it to take the properties found on `body` and cast them to our `Todo` struct. Should an error occur here we can respond back to the client with a 400 because clearly it was not our fault they sent crappy data. With the data now in the appropriate format we are ready to work with our `todos` in the second half of our handler.
+
+```go
+todoMu.Lock()
+defer todoMu.Unlock()
+
+t.ID = len(todos) + 1
+t.CreatedAt = time.Now()
+t.Done = false
+t.UpdatedAt = &t.CreatedAt
+todos[t.ID] = &t
+w.Header().Set("Content-Type", "application/json")
+w.WriteHeader(http.StatusCreated)
+json.NewEncoder(w).Encode(t)
+```
+
+As stated when we first discussed the mutex we need to _lock_ the door so no other go routine can access the `todos` as we are mutating the map. It is common place to immediately follow the lock declaration with the `defer` statement to avoid forgetting to unlock the mutex. We then go on to assign any of the necessary values to the `todo` that did not come from the request and then assign the reference of the created `todo` to it's appropriate spot in the the `todos` map. We respond back with a 201 and send the data back to the client.
+
+## Getting Our Todos
+
+When getting all of our todos we will want to return back to the client a list not a map. In Go we predominantly work with what are known as _slices_. Since we are working with a map of `todos` we will need to create a slice very similarly to how we created our map using `make` however this time we will tell the function that we are working with a `[]*Todo` as our type and that it should of size zero. This means that if we were to examine `ts` after it is created `len(ts) == 0` would evaluate to true. The third and final argument is what sets the capacity of the underlying array. I won't go into a lot of depth on this here but slices are essentially and abstraction on top of arrays in Go. Working with arrays in Go is substantially different than in JS/TS land where we mainline memory allocation like a heroin addict. So every time we see a call to `GET /todos` we will create a slice of zero length with a capacity of the current length of our `todos` map.
+
+We can then go about looping over our map of `todos` and building our slice using the `append` function (think of pushing items on to the array if you are coming from JS/TS). Then we send our slice back to the client.
+
+```go
+mux.HandleFunc("GET /todos", func(w http.ResponseWriter, r *http.Request) {
+	todoMu.Lock()
+	defer todoMu.Unlock()
+
+	ts := make([]*Todo, 0, len(todos))
+	for _, t := range todos {
+		ts = append(ts, t)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(ts)
+})
+```
+
+When working with returning an individual `todo` we make use of the `{id}` param in our request. It's important to note that `r.PathValue` will evaluate to a string...always. So if we fat fingered that to be `{idd}` in the pattern or tried to access `r.PathValue("idd")` we would still get back a string. I did not add any check here because we need to coerce this value into a number to access our `todo` within the map anyways. `strconv.Atoi` will do this for us or in the case that we have an empty string it will result in an error.
+
+Something I really love about working with maps in Go is that when attempting to access the map we can grab the second result returned to check if we even got anything back at all. In JS/TS land if I try to access a key that does not exist on an object I receive back `undefined`. If I was absolutely expecting a value to be returned and then tried to do something with that value I am in real trouble.
+
+With the correct `todo` found we can respond back to the client.
+
+```go
+mux.HandleFunc("GET /todos/{id}", func(w http.ResponseWriter, r *http.Request) {
+		todoMu.Lock()
+		defer todoMu.Unlock()
+
+		id := r.PathValue("id")
+		tid, err := strconv.Atoi(id)
+		if err != nil {
+			http.Error(w, "Invalid ID", http.StatusBadRequest)
+			return
+		}
+		t, ok := todos[tid]
+		if !ok {
+			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(t)
+	})
+```
+
+## Wrap Up
+
+For brevity sake I will not go into the `DELETE` OR `PUT` handlers, but you can find the code [here](https://github.com/rockchalkwushock/json-server) on GitHub.
+
+Look at that! We have a fully functional HTTP Server and JSON API for working with todos and we didn't even need to run a `go get ...` to bring in a third party package! Coming from JS/TS land that is boss! This goes to show just how powerful Go is and how quickly you can write up a proof of concept using nothing but Go. This article is not here to say don't go use any of the countless web frameworks like [Echo](https://echo.labstack.com/), [Fiber](https://gofiber.io/), or [Gin](https://gin-gonic.com/). I am personally using `fiber` as I develop my personal finance tracker, more to come on that in the future as it's my first full fledge Go application I am writing from scratch.
+
+<Signature />
+---

@@ -38,6 +38,7 @@ const TECH_TAGS = [
 	'iterm',
 	'javascript',
 	'macos',
+	'make',
 	'nextjs',
 	'nodejs',
 	'pnpm',
@@ -46,6 +47,7 @@ const TECH_TAGS = [
 	'qwik',
 	'qwik-city',
 	'reactjs',
+	'scripting',
 	'ssh',
 	'tailwindcss',
 	'typescript',
@@ -83,7 +85,7 @@ const articleSchema = z.object({
 		.string()
 		.transform(str => new Date(str))
 		.optional(),
-	relatedArticles: z.array(reference('articles')).optional(),
+	relatedArticles: z.array(reference('articles')).default([]),
 	tags: tagsSchema,
 	timeToRead: z.string().optional(),
 	title: z.string(),

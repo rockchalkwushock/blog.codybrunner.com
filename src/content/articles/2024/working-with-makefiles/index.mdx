@@ -1,0 +1,118 @@
+---
+archived: false
+author: cody-brunner
+canonicalURL: 'https://blog.codybrunner.com/2024/working-with-makefiles'
+categories:
+  - technology
+coverImage:
+  alt: 'Makefiles, making managing your application less crapy.'
+  src: ./hero.webp
+createdAt: 01/16/2024
+description: >-
+  In my journey into learning Go I have been learning how to use Makefiles
+  within my Go projects. I had never worked with makefiles before and this post
+  will touch on how to use them.
+draft: false
+featured: false
+publishedAt: 01/29/2024
+relatedArticles:
+  - 2024/writing-a-http-server-with-go
+  - 2024/going-to-the-gopher-side
+tags:
+  - go
+  - make
+title: Working with Makefiles
+---
+
+import { Image } from 'astro:assets'
+import Signature from '~/components/signature.astro'
+import heroImage from './hero.webp'
+
+# {frontmatter.description}
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+		alt={frontmatter.coverImage.alt}
+		class='object-cover'
+		fetchpriority='high'
+		height={400}
+		quality={100}
+		src={heroImage}
+		width={800}
+	/>
+	<small>{frontmatter.coverImage.alt}</small>
+</div>
+
+## Introduction
+
+`make` is a build automation tool that I had honestly never used until working with Go. Not to say I had not heard of it or seen a `makefile` floating around in repositories before, but I just really did not understand the "why" behind it. Chalk it up to my time in tech being in the JavaScript ecosystem where we use `scripts` in the `package.json` to run build tools, test suites, etc via `npm`, `yarn`, `pnpm`, or now `bun`. So let's explore how a `makefile` works and what we can do with it.
+
+## What is a Makefile?
+
+A `makefile` is simply put a file that contains the rules and dependencies that specify how the project should be built.
+
+```make caption="The format that a makefile follows." title="makefile"
+target: dependencies
+  commands
+```
+
+- **target**: is the file or action that needs to be created.
+- **dependencies**: are the files or conditions that the target depends on.
+- **commands**: are the shell commands or other build tools to execute in order to create the target.
+
+Below would be a simple example of how to use a `makefile` in a Go project:
+
+```make caption="An example makefile for Go." title="makefile"
+build:
+  # Build the binary program and output it to bin/api
+  go build -o bin/api
+
+# With the prerequisite of "build" `make` will determine if there
+# has been changes to the "build" target before executing the command
+# If there has then ./bin/api is new and `make` will run the program.
+# If not then there is no reason to recompile the program & execute it.
+# Instead `make` will just run the existing binary in ./bin/api
+run: build
+  # Run the program
+  ./bin/api
+
+test:
+  # Run the test suite in verbose mode
+  go test -v ./...
+
+# .PHONY will prevent `make` from confusing the target with a file name.
+.PHONY clean
+clean:
+  rm -rf ./bin/api
+```
+
+And to execute the targets from the `makefile` we can call `make` + the target we wish to run.
+
+```bash
+make build
+make run
+make test
+```
+
+You will notice that upon running our targets we see the underlying command get printed out to the terminal. If you don't want that to happen you can simply prefix the command with `@`:
+
+```make caption="Stop outputting the commands to the terminal." title="makefile"
+build:
+  @go build -o bin/api
+
+run: build
+  @./bin/api
+
+seed:
+  @go run scripts/seed.go
+
+test:
+  @go test -v ./...
+```
+
+## Wrap Up
+
+There is honestly a whole lot more to `make` and `makefiles`. This is what I have encountered while working with Go and kind of the basics I have adopted in my projects. If you really want a deep dive into this topic I highly suggest going through this free [tutorial](https://makefiletutorial.com/) or you can read the [GNU Make docs](https://www.gnu.org/software/make/manual/make.html).
+
+<Signature />
+---
