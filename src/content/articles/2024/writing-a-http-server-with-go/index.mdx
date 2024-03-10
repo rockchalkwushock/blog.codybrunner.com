@@ -1,18 +1,22 @@
 ---
 archived: false
 author: cody-brunner
-canonicalURL: https://blog.codybrunner.com/2024/writing-a-http-server-with-go
+canonicalURL: 'https://blog.codybrunner.com/2024/writing-a-http-server-with-go'
 categories:
   - technology
 coverImage:
   alt: A Go powered HTTP Server.
   src: ./hero.webp
 createdAt: 01/19/2024
-description: Writing a simple HTTP Server using only what is provided via the Go Standard Library.
+description: >-
+  Writing a simple HTTP Server using only what is provided via the Go Standard
+  Library.
 draft: true
 featured: true
 publishedAt: 03/11/2024
-relatedArticles: []
+relatedArticles:
+  - 2024/working-with-makefiles
+  - 2024/going-to-the-gopher-side
 tags:
   - go
 title: Writing a HTTP Server with Go
@@ -20,8 +24,22 @@ title: Writing a HTTP Server with Go
 
 import { Image } from 'astro:assets'
 import Signature from '~/components/signature.astro'
+import heroImage from './hero.webp'
 
 # {frontmatter.description}
+
+<div class='flex flex-col items-center gap-2'>
+	<Image
+		alt={frontmatter.coverImage.alt}
+		class='object-cover'
+		fetchpriority='high'
+		height={400}
+		quality={100}
+		src={heroImage}
+		width={800}
+	/>
+	<small>{frontmatter.coverImage.alt}</small>
+</div>
 
 ## Introduction
 
@@ -285,3 +303,4 @@ For brevity sake I will not go into the `DELETE` OR `PUT` handlers, but you can 
 Look at that! We have a fully functional HTTP Server and JSON API for working with todos and we didn't even need to run a `go get ...` to bring in a third party package! Coming from JS/TS land that is boss! This goes to show just how powerful Go is and how quickly you can write up a proof of concept using nothing but Go. This article is not here to say don't go use any of the countless web frameworks like [Echo](https://echo.labstack.com/), [Fiber](https://gofiber.io/), or [Gin](https://gin-gonic.com/). I am personally using `fiber` as I develop my personal finance tracker, more to come on that in the future as it's my first full fledge Go application I am writing from scratch.
 
 <Signature />
+---
