@@ -46,15 +46,17 @@ const METADATA = {
 		</div>
 		<div class='flex flex-col gap-20'>
 			{
-				Object.entries(archivedMap).map(([year, { articles }]) => (
-					<Section id={year} title={year}>
-						<ul class='flex flex-col gap-16' role='list'>
-							{articles.map(({ data: article, slug }) => (
-								<Article article={article} slug={slug} />
-							))}
-						</ul>
-					</Section>
-				))
+				Object.entries(archivedMap)
+					.reverse()
+					.map(([year, { articles }]) => (
+						<Section id={year} title={year}>
+							<ul class='flex flex-col gap-16' role='list'>
+								{articles.reverse().map(({ data: article, slug }) => (
+									<Article article={article} slug={slug} />
+								))}
+							</ul>
+						</Section>
+					))
 			}
 		</div>
 		<div class='mt-16 flex'>

@@ -9,12 +9,12 @@ description: Everything I have learned when it comes to SSH after setting up my 
 draft: false
 featured: false
 publishedAt: 01/13/2022
-relatedArticles:
-  - 2017/deploying-with-now
-  - 2018/getting-started-with-python3
-  - 2021/how-to-kill-processes-on-macos
-  - 2021/migrating-from-yarn-to-pnpm
-  - 2021/scripting-in-iterm2
+# relatedArticles:
+#   - 2017/deploying-with-now
+#   - 2018/getting-started-with-python3
+#   - 2021/how-to-kill-processes-on-macos
+#   - 2021/migrating-from-yarn-to-pnpm
+#   - 2021/scripting-in-iterm2
 tags:
   - cli
   - ssh
@@ -33,7 +33,7 @@ SSH or secure shell, is a remote management tool that gives us access to other m
 
 ## How Does SSH Work?
 
-SSH works by establishing a secure connection between the client and server. All traffic is encrypted by default in ssh. When you ssh into a server for the first time you will be asked if you are certain you want to connect to the server. When you say "Yes" a cryptographic fingerprint of the server is stored in the `~/.ssh/known_hosts` file on your machine (aka: the client). This is protecting us from "man in the middle" attacks (MITM). Basically if a malicious entity setup a server with the same IP address and we attempted to connect ssh would be like _"Nah dog that ain't who you think it is and I aint connecting to that shit!"_ When the connection is established between your machine and the server depending on the rights that have been give to your user (or you gave yourself) you will be able to remotely execute commands on the server. For instance maybe your user only has read rights. Then you could perform commands like `ls` or `cat`, but you would never be able to write to a file or use `sudo` to change any configurations.
+SSH works by establishing a secure connection between the client and server. All traffic is encrypted by default in ssh. When you ssh into a server for the first time you will be asked if you are certain you want to connect to the server. When you say "Yes" a cryptographic fingerprint of the server is stored in the `~/.ssh/known_hosts` file on your machine (aka: the client). This is protecting us from "man in the middle" attacks (MITM). Basically if a malicious entity setup a server with the same IP address and we attempted to connect ssh would be like _"Nah dog that ain't who you think it is and I ain't connecting to that shit!"_ When the connection is established between your machine and the server depending on the rights that have been give to your user (or you gave yourself) you will be able to remotely execute commands on the server. For instance maybe your user only has read rights. Then you could perform commands like `ls` or `cat`, but you would never be able to write to a file or use `sudo` to change any configurations.
 
 ## Finding SSH & Checking For Keys
 
@@ -43,7 +43,7 @@ Most if not all machines these days ship with SSH, but to check if it is on our 
 which ssh # /usr/bin/ssh
 ```
 
-Before going any further though you should check to see if any keys exist on the machine. We want to do this to prevent accidentally overwritting any ssh keys. There are two ways we can check this:
+Before going any further though you should check to see if any keys exist on the machine. We want to do this to prevent accidentally overwriting any ssh keys. There are two ways we can check this:
 
 ```shell
 ssh-add -l # checks to see if any ssh-keys are loaded in the terminal session
@@ -120,7 +120,7 @@ Now that GitHub knows your public key you can test out that the connection is es
 ssh -T git@github.com
 # Say "yes" to connecting
 # You should see:
-# > Hi git! You've successfully authenticated, but GitHub does not provie shell access.
+# > Hi git! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
 ## SSH Client Configuration
@@ -146,17 +146,17 @@ Host <name>
   User <username>
 ```
 
-So first off you have a splat `*` which is saying for every `Host` that you add to this file in the future the following configuration should be applied. We want to add the keys to the `ssh-agent` and we want to use the macOS Keychain with passphrases you set for your ssh keys. Now in the future you won't have to run the `eval "$(ssh-agent -s)"` command everytime you start a terminal session. Instead ssh will do that behind the scenes when your session starts. It will aslo allow you to not have to type in your passphrase every time you ssh into a remote host.
+So first off you have a splat `*` which is saying for every `Host` that you add to this file in the future the following configuration should be applied. We want to add the keys to the `ssh-agent` and we want to use the macOS Keychain with passphrases you set for your ssh keys. Now in the future you won't have to run the `eval "$(ssh-agent -s)"` command every time you start a terminal session. Instead ssh will do that behind the scenes when your session starts. It will also allow you to not have to type in your passphrase every time you ssh into a remote host.
 
 > NOTE: `UseKeychain` is only available to macOS users.
 
-The next thing you see is a definition for a `Host`. This key can be whatever you want it to be. It's how you are going to tell ssh which configuraiton to execute. So sticking with the example you can go with a name like `personal_github`. Now when you want to use ssh with your personal GitHub account you can run:
+The next thing you see is a definition for a `Host`. This key can be whatever you want it to be. It's how you are going to tell ssh which configuration to execute. So sticking with the example you can go with a name like `personal_github`. Now when you want to use ssh with your personal GitHub account you can run:
 
 ```shell
 ssh personal_github
 ```
 
-This works because the next line is specifying the `HostName` this is address of the server/machine you want to establish a remote connection with. In our case it is `github.com`. The next two lines refer to using _Identities_ this refers to the ssh keys you created. We are telling ssh that for this specific configuration if should look for the corresponding private key file and that we only want ssh to use the identities that are listed in this config file (there could be more identites loaded into the `ssh-agent`).
+This works because the next line is specifying the `HostName` this is address of the server/machine you want to establish a remote connection with. In our case it is `github.com`. The next two lines refer to using _Identities_ this refers to the ssh keys you created. We are telling ssh that for this specific configuration if should look for the corresponding private key file and that we only want ssh to use the identities that are listed in this config file (there could be more identities loaded into the `ssh-agent`).
 
 The [SSH Academy](https://www.ssh.com/academy) has great documentation and you can find more on the `config` file [here](https://www.ssh.com/academy/ssh/config).
 
@@ -227,10 +227,10 @@ ssh slave-1
 When it comes to ssh on the server there are a few things to know.
 
 1. Anytime a client connects to the server the public keys of the client will be stored in `~/.ssh/authorized_keys`. This is the destination of the `ssh-copy-id` command we ran earlier.
-2. On the client you were asked if you wanted to accept the connection when connecting to a server for the first time. A fingerprint for that server connection was added to the `~/.ssh/known_hosts` file. The server has a similar process; however this is not managed in one file. You will find files named `ssh_host_<type|name>_key.pub` under the `/etc/ssh/` direcotyr. These files hold the fingerprint for the client that connected under that specific `type` or `name` (i.e. on each of my Raspberry Pi's there is a `/etc/ssh/ssh_host_master_key.pub` present)
+2. On the client you were asked if you wanted to accept the connection when connecting to a server for the first time. A fingerprint for that server connection was added to the `~/.ssh/known_hosts` file. The server has a similar process; however this is not managed in one file. You will find files named `ssh_host_<type|name>_key.pub` under the `/etc/ssh/` directory. These files hold the fingerprint for the client that connected under that specific `type` or `name` (i.e. on each of my Raspberry Pi's there is a `/etc/ssh/ssh_host_master_key.pub` present)
 3. Just as there is a config for the client where we setup the _easier_ ssh rules (i.e. `ssh master`) the server has it's own config file for describing how ssh should allow connections, what port to run on, who is authorized to use ssh, etc.
 4. On most servers the ssh service is actually under `sshd` the `d` standing for daemon and can be managed using `systemctl` (i.e. `systemctl status sshd`).
-5. You can find the ssh related system configurations underd `/etc/ssh/`
+5. You can find the ssh related system configurations under `/etc/ssh/`
 
 ## Quick Security For SSH Server
 

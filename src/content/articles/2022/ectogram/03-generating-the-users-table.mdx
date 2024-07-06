@@ -23,7 +23,7 @@ tags:
 title: 'Ectogram: Generating The Users Table'
 ---
 
-import Signature from '~/components/Signature.astro'
+import Signature from '~/components/signature.astro'
 
 Now that we have our project all set up and Ecto customized we can begin generating migrations for our database. Coming from frontend land I don't have much experience with performing migrations so this will be great practice. For those out there that don't know a migration is a snapshot of what the data in your database looks like at that point in time. In our case this is the first migration and we will be adding a table to it called `users`. We define what the users table looks like by defining columns on the table. A row in that table could end up looking something like the below:
 
@@ -34,7 +34,7 @@ SELECT * FROM users;
 -- abc-123-def | turd@gmail.com | https://ectogram.com/darealturd | @darealturd
 ```
 
-With Ecto we have te ability to generate migrations from the command-line using `mix`, but we also have the ability to apply migrations and rollback if neccesary. I am sure I am not the only one out there who has forgotten to apply migrations to the local database after pulling in changes on a git tree, this is where rollback can come in handy. We will take a look at `mix ecto.rollback` a little later when we have more migrations to work with. If you take a look at our `mix.exs` you can see when we run the `ecto.setup` command we apply all of our migrations and then seed the database. This comes in particularly handy if you have someone new joining your team. Documentation can tell that user:
+With Ecto we have te ability to generate migrations from the command-line using `mix`, but we also have the ability to apply migrations and rollback if necessary. I am sure I am not the only one out there who has forgotten to apply migrations to the local database after pulling in changes on a git tree, this is where rollback can come in handy. We will take a look at `mix ecto.rollback` a little later when we have more migrations to work with. If you take a look at our `mix.exs` you can see when we run the `ecto.setup` command we apply all of our migrations and then seed the database. This comes in particularly handy if you have someone new joining your team. Documentation can tell that user:
 
 > After cloning the repository and confirming you have `elixir` and `erlang` on your machine just run `mix setup`.
 
@@ -229,7 +229,7 @@ SELECT u0."id", u0."avatar", u0."bio", u0."birth_date", u0."email", u0."hashed_p
 
 ## Adding Bcrypt
 
-We will need to add one dependency before moving foward. We will be making use of the popular [`bcrypt`](https://hexdocs.pm/bcrypt_elixir/api-reference.html) password hashing library. Add the following to your `mix.exs` and then install the dependency:
+We will need to add one dependency before moving forward. We will be making use of the popular [`bcrypt`](https://hexdocs.pm/bcrypt_elixir/api-reference.html) password hashing library. Add the following to your `mix.exs` and then install the dependency:
 
 ```diff showLineNumbers title="mix.exs"
 defp deps do
@@ -337,7 +337,7 @@ The first thing that happens is that we _cast_ the input (`attrs`) against our d
 
 > Cool tidbit I learned recently was that instead of creating the attribute `@required_fields` as a list of atoms you can instead use the [`~w`](https://elixir-lang.org/getting-started/sigils.html#word-lists) sigil which is for word lists add the _words_ you want to use in a **non-comma** separated list, and append the `a` at the end. This will generate that same list of atoms.
 
-The very next thing we do is get into validating the data and checking the various constriants. You can see that in `validate_birth_date/1` we excplicitly check the constraint we defined in our migration `:eighteen_or_older_only`.
+The very next thing we do is get into validating the data and checking the various constraints. You can see that in `validate_birth_date/1` we explicitly check the constraint we defined in our migration `:eighteen_or_older_only`.
 
 ```shell
 iex -S mix

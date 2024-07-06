@@ -23,9 +23,9 @@ tags:
 title: 'Ectogram: Testing Ecto'
 ---
 
-import Signature from '~/components/Signature.astro'
+import Signature from '~/components/signature.astro'
 
-I will be honest when I say any testing experience I have is like 4 years old, it is with [Jest](https://jestjs.io/) in JavaScript Land, and only on the frontend...so yeeaaah this will be a learning experience. I guarentee you there are better approaches to testing using [ExUnit](https://hexdocs.pm/ex_unit/ExUnit.html) that I just have not discovered yet. I am making it a point to make sure there are some basic tests in place for all the _contexts_ that represent Ectogram. Like Allen Iverson once said:
+I will be honest when I say any testing experience I have is like 4 years old, it is with [Jest](https://jestjs.io/) in JavaScript Land, and only on the frontend...so yeah this will be a learning experience. I guarantee you there are better approaches to testing using [ExUnit](https://hexdocs.pm/ex_unit/ExUnit.html) that I just have not discovered yet. I am making it a point to make sure there are some basic tests in place for all the _contexts_ that represent Ectogram. Like Allen Iverson once said:
 
 and yeah Allen, I need lots of practice. 🤣 What better way to learn testing than when recreating a platform that serves over 1 billion active users.🥲
 
@@ -149,7 +149,7 @@ defmodule Ectogram.UserTest do
 end
 ```
 
-So very similarly to JavaScript Land their is a describe, test, and setup block. The `setup/1` block is amazing in my opinion because it cuts down on having to create a user or resource in every test manually. As you can see in the code sample above we return a map with a `user` everytime the setup block is invoked, and it just so happens that will occur right before every test is ran.
+So very similarly to JavaScript Land their is a describe, test, and setup block. The `setup/1` block is amazing in my opinion because it cuts down on having to create a user or resource in every test manually. As you can see in the code sample above we return a map with a `user` every time the setup block is invoked, and it just so happens that will occur right before every test is ran.
 
 The great thing about how Ecto handles testing in our sandbox is every test is executed as a transaction. At the beginning of the transaction we already have a user present in the database to test against. We then perform whatever query we want to test against that user and on completion of the test Ecto will rollback the transaction. This means if we updated the user's name when the test finishes the user's name will return to the initial value. This protects us from issues surrounding artifacts from previous tests interfering with future tests.
 
@@ -241,7 +241,7 @@ I did not write code for these actions with the User context and schema. At the 
 
 ## Running Tests In Async Mode
 
-I acutally forgot all about enabling this and didn't realize it until writing this post. Yet another thing to _circle back_ too. 🤦🏻‍♂️ We can enable `async` mode by adding the following to our test:
+I actually forgot all about enabling this and didn't realize it until writing this post. Yet another thing to _circle back_ too. 🤦🏻‍♂️ We can enable `async` mode by adding the following to our test:
 
 ```diff showLineNumbers title="/test/ectogram/user_test.ex"
 defmodule Ectogram.UserTest do
@@ -251,7 +251,7 @@ defmodule Ectogram.UserTest do
 end
 ```
 
-What this is doing is telling ExUnit that it can run each test suite with the `async` tag concurrently to one another. The individiual tests in each test suite are still ran serially though. So say Ectogram ends up having like 200 test files/suites. If we didn't add the `async` tag the suites would be ran serially as well as their internal tests which could be a pretty lenghty process. By running the test suites asynchronously we will speed up the time it takes our test sutie to complete by a lot!
+What this is doing is telling ExUnit that it can run each test suite with the `async` tag concurrently to one another. The individual tests in each test suite are still ran serially though. So say Ectogram ends up having like 200 test files/suites. If we didn't add the `async` tag the suites would be ran serially as well as their internal tests which could be a pretty lengthy process. By running the test suites asynchronously we will speed up the time it takes our test suite to complete by a lot!
 
 And that does it for testing at least for the user context and schema. In the next post I am going to add most if not all of the rest of Ectogram's data models and we will cover probably what kicks my ass the most when it comes to SQL in general: _associations_. As always the code for this post can be found in [PR#3](https://github.com/rockchalkwushock/ectogram/pull/3).
 
