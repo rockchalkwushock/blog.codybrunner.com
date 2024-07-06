@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content'
+
+import Article from '~/components/article.astro'
+import Head from '~/components/head.astro'
+import Link from '~/components/link.astro'
+import Section from '~/components/section.astro'
+import SimpleLayout from '~/components/simple-layout.astro'
+import BaseLayout from '~/layouts/base-layout.astro'
+
+import { createArchivedMap, isArchived } from '~/utils/helpers'
+
+const articles = await getCollection('articles', article => {
+	return isArchived(article)
+})
+
+const archivedMap = createArchivedMap(articles)
+
+const METADATA = {
+	description:
+		'The collection of all the posts I have made since starting my blog in 2017.',
+	title: 'Archive',
+} as const
+---
+
+<BaseLayout>
+	<Head
+		description={METADATA.description}
+		slot='metadata'
+		title={METADATA.title}
+	/>
+	<SimpleLayout
+		intro='The collection of all the posts I have made since starting my blog in 2017.'
+		slot='content'
+		title='Archive'
+	>
+		<div class='mb-8 flex'>
+			<Link
+				aria-label='Go to Articles.'
+				class='flex scale-95 items-center gap-2 rounded-lg bg-primary-50 px-3 py-2 transition hover:scale-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-700'
+				href='/'
+			>
+				<span>←</span>
+				<span>Articles</span>
+			</Link>
+		</div>
+		<div class='flex flex-col gap-20'>
+			{
+				Object.entries(archivedMap)
+					.reverse()
+					.map(([year, { articles }]) => (
+						<Section id={year} title={year}>
+							<ul class='flex flex-col gap-16' role='list'>
+								{articles.reverse().map(({ data: article, slug }) => (
+									<Article article={article} slug={slug} />
+								))}
+							</ul>
+						</Section>
+					))
+			}
+		</div>
+		<div class='mt-16 flex'>
+			<Link
+				aria-label='Go to Articles.'
+				class='flex scale-95 items-center gap-2 rounded-lg bg-primary-50 px-3 py-2 transition hover:scale-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-700'
+				href='/'
+			>
+				<span>←</span>
+				<span>Articles</span>
+			</Link>
+		</div>
+	</SimpleLayout>
+</BaseLayout>

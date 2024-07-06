@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content'
 
 import Article from '~/components/article.astro'
 import Head from '~/components/head.astro'
-// import Link from '~/components/link.astro'
+import Link from '~/components/link.astro'
 import SimpleLayout from '~/components/simple-layout.astro'
 import BaseLayout from '~/layouts/base-layout.astro'
 
@@ -14,10 +14,7 @@ import {
 } from '~/utils/helpers'
 
 let articles = await getCollection('articles', article => {
-	if (import.meta.env.MODE === 'production') {
-		return isPublishedAndNotArchived(article)
-	}
-	return true
+	return isPublishedAndNotArchived(article)
 })
 
 articles = sortArticles(articles, isAfter)
@@ -30,7 +27,7 @@ articles = sortArticles(articles, isAfter)
 		slot='content'
 		title='Articles'
 	>
-		<!-- <div class='mb-8 flex justify-end'>
+		<div class='mb-8 flex justify-end'>
 			<Link
 				aria-label='Go to Archive.'
 				class='flex scale-95 items-center gap-2 rounded-lg bg-primary-50 px-3 py-2 transition hover:scale-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-700'
@@ -39,7 +36,7 @@ articles = sortArticles(articles, isAfter)
 				<span>Archive</span>
 				<span>→</span>
 			</Link>
-		</div> -->
+		</div>
 		<div
 			class='md:border-l md:border-primary-100 md:pl-6 md:dark:border-primary-700/40'
 		>
@@ -51,7 +48,7 @@ articles = sortArticles(articles, isAfter)
 				}
 			</div>
 		</div>
-		<!-- <div class='mt-16 flex justify-end'>
+		<div class='mt-16 flex justify-end'>
 			<Link
 				aria-label='Go to Archive.'
 				class='flex scale-95 items-center gap-2 rounded-lg bg-primary-50 px-3 py-2 transition hover:scale-100 hover:bg-primary-200 dark:bg-primary-800/50 dark:hover:bg-primary-700'
@@ -60,6 +57,6 @@ articles = sortArticles(articles, isAfter)
 				<span>Archive</span>
 				<span>→</span>
 			</Link>
-		</div> -->
+		</div>
 	</SimpleLayout>
 </BaseLayout>

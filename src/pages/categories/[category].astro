@@ -20,6 +20,7 @@ export async function getStaticPaths() {
 	const categories = [
 		...new Set(
 			articles
+				.reverse()
 				.map(article => {
 					if (typeof article.data.categories === 'undefined') return undefined
 					return article.data.categories

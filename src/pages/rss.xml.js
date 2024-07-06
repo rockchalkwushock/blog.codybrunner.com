@@ -4,19 +4,21 @@ import sanitizeHtml from 'sanitize-html'
 import MarkdownIt from 'markdown-it'
 const parser = new MarkdownIt()
 
-import { isPublished } from '~/utils/helpers'
+import { isAfter, isPublished, sortArticles } from '~/utils/helpers'
 
 // https://docs.astro.build/en/guides/rss/#setting-up-astrojsrss
 export async function GET(context) {
-	const articles = await getCollection('articles', article => {
+	let articles = await getCollection('articles', article => {
 		return isPublished(article)
 	})
+	articles = sortArticles(articles, isAfter)
 	const author = await getEntry('authors', 'cody-brunner')
 	return rss({
 		// (optional) inject custom xml
 		customData: `<language>en-us</language>`,
 		// `<description>` field in output xml
-		description: 'My musings about the everyday challenges of life and things I have learned in software development.',
+		description:
+			'My musings about the everyday challenges of life and things I have learned in software development.',
 		// Array of `<item>`s in output xml
 		// See "Generating items" section for examples using content collections and glob imports
 		items: articles.map(article => ({
