@@ -110,7 +110,7 @@ export function MobileNav({
 										Articles
 									</Popover.Button>
 								</li>
-								<li>
+								{/* <li>
 									<Popover.Button
 										aria-label='Go to Bookshelf Page.'
 										as='a'
@@ -119,8 +119,8 @@ export function MobileNav({
 									>
 										Bookshelf
 									</Popover.Button>
-								</li>
-								<li>
+								</li> */}
+								{/* <li>
 									<Popover.Button
 										aria-label='Go to my Appointlet Booking Page.'
 										as='a'
@@ -131,7 +131,7 @@ export function MobileNav({
 									>
 										Meet
 									</Popover.Button>
-								</li>
+								</li> */}
 								<li>
 									<Popover.Button
 										aria-label='Go to Projects Page.'
@@ -142,7 +142,7 @@ export function MobileNav({
 										Projects
 									</Popover.Button>
 								</li>
-								<li>
+								{/* <li>
 									<Popover.Button
 										aria-label='Go to Uses Page'
 										as='a'
@@ -151,7 +151,7 @@ export function MobileNav({
 									>
 										Uses
 									</Popover.Button>
-								</li>
+								</li> */}
 							</ul>
 						</nav>
 						<div className='flex items-center justify-end'>
