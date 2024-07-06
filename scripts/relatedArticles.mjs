@@ -8,7 +8,7 @@ const info = chalk.cyanBright.bold
 const success = chalk.magentaBright.bold
 
 // TODO: Update this to scan all sub-directories in the future.
-const files = sync('./src/content/articles/2024/**/*.mdx')
+const files = sync('./src/content/articles/**/**/*.mdx')
 const slugRegex = /.*?(?=\d{4})/g
 
 log(info('Running Script >>>'))
