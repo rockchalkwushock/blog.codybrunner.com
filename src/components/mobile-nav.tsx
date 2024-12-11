@@ -1,4 +1,11 @@
-import { Popover, Transition } from '@headlessui/react'
+import {
+	Popover,
+	PopoverBackdrop,
+	PopoverButton,
+	PopoverPanel,
+	Transition,
+	TransitionChild,
+} from '@headlessui/react'
 import { Fragment } from 'react'
 import { cn } from '~/utils/helpers'
 import { ThemeToggle } from './theme-toggle'
@@ -10,7 +17,7 @@ export function MobileNav({
 }): JSX.Element {
 	return (
 		<Popover className='pointer-events-auto md:hidden'>
-			<Popover.Button className='group flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-primary-800 shadow-lg shadow-primary-800/5 ring-1 ring-primary-900/5 backdrop-blur dark:bg-primary-800/90 dark:text-primary-200 dark:ring-white/10 dark:hover:ring-white/20'>
+			<PopoverButton className='group flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-primary-800 shadow-lg shadow-primary-800/5 ring-1 ring-primary-900/5 backdrop-blur dark:bg-primary-800/90 dark:text-primary-200 dark:ring-white/10 dark:hover:ring-white/20'>
 				Menu
 				<svg
 					aria-hidden='true'
@@ -25,9 +32,9 @@ export function MobileNav({
 						strokeWidth='1.5'
 					/>
 				</svg>
-			</Popover.Button>
-			<Transition.Root>
-				<Transition.Child
+			</PopoverButton>
+			<Transition>
+				<TransitionChild
 					as={Fragment}
 					enter='duration-150 ease-out'
 					enterFrom='opacity-0'
@@ -36,9 +43,9 @@ export function MobileNav({
 					leaveFrom='opacity-100'
 					leaveTo='opacity-0'
 				>
-					<Popover.Overlay className='fixed inset-0 z-50 bg-primary-800/40 backdrop-blur-sm dark:bg-black/80' />
-				</Transition.Child>
-				<Transition.Child
+					<PopoverBackdrop className='fixed inset-0 z-50 bg-primary-800/40 backdrop-blur-sm dark:bg-black/80' />
+				</TransitionChild>
+				<TransitionChild
 					as={Fragment}
 					enter='duration-150 ease-out'
 					enterFrom='opacity-0 scale-95'
@@ -47,12 +54,12 @@ export function MobileNav({
 					leaveFrom='opacity-100 scale-100'
 					leaveTo='opacity-0 scale-95'
 				>
-					<Popover.Panel
+					<PopoverPanel
 						className='fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-white p-8 ring-1 ring-primary-900/5 dark:bg-primary-900 dark:ring-primary-800'
 						focus
 					>
 						<div className='flex flex-row-reverse items-center justify-between'>
-							<Popover.Button
+							<PopoverButton
 								aria-label='Close Navigation Menu'
 								className='-m-1 p-1'
 							>
@@ -69,7 +76,7 @@ export function MobileNav({
 										strokeWidth='1.5'
 									/>
 								</svg>
-							</Popover.Button>
+							</PopoverButton>
 							<h2 className='text-sm font-medium text-primary-600 dark:text-primary-400'>
 								Navigation
 							</h2>
@@ -77,52 +84,60 @@ export function MobileNav({
 						<nav className='mt-6'>
 							<ul className='-my-2 divide-y divide-primary-100 text-base text-primary-800 dark:divide-primary-100/5 dark:text-primary-300'>
 								<li>
-									<Popover.Button
+									<PopoverButton
 										aria-label='Go to Home Page.'
-										as='a'
-										className='block py-2'
-										href='https://codybrunner.com'
-									>
-										Home
-									</Popover.Button>
-								</li>
-								{/* <li>
-									<Popover.Button
-										aria-label='Go to About Page.'
-										as='a'
-										className='block py-2'
-										href='https://codybrunner.com/about'
-									>
-										About
-									</Popover.Button>
-								</li> */}
-								<li>
-									<Popover.Button
-										aria-label='Go to Articles Page.'
 										as='a'
 										className={cn(
 											'block py-2',
-											currentPath.startsWith('/') &&
+											currentPath === '/' &&
 												'font-semibold text-accent-500 dark:text-accent-400'
 										)}
+										href='https://codybrunner.com'
+									>
+										Home
+									</PopoverButton>
+								</li>
+								{/* <li>
+									<PopoverButton
+										aria-label="Go to About Page."
+										as='a'
+										className={cn(
+											'block py-2',
+											currentPath.startsWith('/about') &&
+												'font-semibold text-accent-500 dark:text-accent-400'
+										)}
+										href="https://codybrunner.com/about"
+									>
+										About
+									</PopoverButton>
+								</li> */}
+								<li>
+									<PopoverButton
+										aria-label='Go to Articles Page.'
+										as='a'
+										className='block py-2'
 										href='/'
 									>
 										Articles
-									</Popover.Button>
+									</PopoverButton>
 								</li>
 								{/* <li>
-									<Popover.Button
-										aria-label='Go to Bookshelf Page.'
+									<PopoverButton
+										aria-label="Go to Boookshelf Page.""
 										as='a'
-										className='block py-2'
-										href='https://codybrunner.com/bookshelf'
+										className={cn(
+											'block py-2',
+											currentPath.startsWith('/bookshelf') &&
+												'font-semibold text-accent-500 dark:text-accent-400'
+										)}
+										href="https://codybrunner.com/bookshelf"
 									>
 										Bookshelf
-									</Popover.Button>
+									</PopoverButton>
 								</li> */}
 								{/* <li>
-									<Popover.Button
-										aria-label='Go to my Appointlet Booking Page.'
+									<PopoverButton
+										aria-label="Go to my Appointlet Booking Page."
 										as='a'
 										className='block py-2'
 										href='https://appt.link/cody-brunner-dev/video-call'
@@ -130,36 +145,44 @@ export function MobileNav({
 										target='_blank'
 									>
 										Meet
-									</Popover.Button>
+									</PopoverButton>
 								</li> */}
 								<li>
-									<Popover.Button
+									<PopoverButton
 										aria-label='Go to Projects Page.'
 										as='a'
-										className='block py-2'
+										className={cn(
+											'block py-2',
+											currentPath.startsWith('/projects') &&
+												'font-semibold text-accent-500 dark:text-accent-400'
+										)}
 										href='https://codybrunner.com/projects'
 									>
 										Projects
-									</Popover.Button>
+									</PopoverButton>
 								</li>
 								{/* <li>
-									<Popover.Button
-										aria-label='Go to Uses Page'
+									<PopoverButton
+										aria-label="Go to Uses Page."
 										as='a'
-										className='block py-2'
-										href='https://codybrunner.com/uses'
+										className={cn(
+											'block py-2',
+											currentPath.startsWith('/uses') &&
+												'font-semibold text-accent-500 dark:text-accent-400'
+										)}
+										href="https://codybrunner.com/uses"
 									>
 										Uses
-									</Popover.Button>
+									</PopoverButton>
 								</li> */}
 							</ul>
 						</nav>
 						<div className='flex items-center justify-end'>
 							<ThemeToggle />
 						</div>
-					</Popover.Panel>
-				</Transition.Child>
-			</Transition.Root>
+					</PopoverPanel>
+				</TransitionChild>
+			</Transition>
 		</Popover>
 	)
 }
