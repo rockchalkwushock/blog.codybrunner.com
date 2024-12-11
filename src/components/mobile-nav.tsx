@@ -86,7 +86,7 @@ export function MobileNav({
 										Home
 									</Popover.Button>
 								</li>
-								<li>
+								{/* <li>
 									<Popover.Button
 										aria-label='Go to About Page.'
 										as='a'
@@ -95,7 +95,7 @@ export function MobileNav({
 									>
 										About
 									</Popover.Button>
-								</li>
+								</li> */}
 								<li>
 									<Popover.Button
 										aria-label='Go to Articles Page.'
