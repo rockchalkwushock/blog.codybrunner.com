@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-function MoonIcon(): JSX.Element {
+function MoonIcon() {
 	return (
 		<svg
 			aria-hidden='true'
@@ -17,7 +17,7 @@ function MoonIcon(): JSX.Element {
 	)
 }
 
-function SunIcon(): JSX.Element {
+function SunIcon() {
 	return (
 		<svg
 			aria-hidden='true'
@@ -36,7 +36,7 @@ function SunIcon(): JSX.Element {
 	)
 }
 
-export function ThemeToggle(): JSX.Element {
+export function ThemeToggle() {
 	const [isMounted, setIsMounted] = useState(false)
 	const [theme, setTheme] = useState(localStorage.getItem('theme') ?? 'light')
 

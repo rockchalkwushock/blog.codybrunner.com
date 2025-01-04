@@ -10,11 +10,7 @@ import { Fragment } from 'react'
 import { cn } from '~/utils/helpers'
 import { ThemeToggle } from './theme-toggle'
 
-export function MobileNav({
-	currentPath,
-}: {
-	currentPath: string
-}): JSX.Element {
+export function MobileNav({ currentPath }: { currentPath: string }) {
 	return (
 		<Popover className='pointer-events-auto md:hidden'>
 			<PopoverButton className='group flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-primary-800 shadow-lg shadow-primary-800/5 ring-1 ring-primary-900/5 backdrop-blur dark:bg-primary-800/90 dark:text-primary-200 dark:ring-white/10 dark:hover:ring-white/20'>
