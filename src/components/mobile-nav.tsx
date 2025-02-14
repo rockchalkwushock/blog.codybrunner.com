@@ -97,20 +97,20 @@ export function MobileNav({
 										Home
 									</PopoverButton>
 								</li>
-								{/* <li>
+								<li>
 									<PopoverButton
-										aria-label="Go to About Page."
+										aria-label='Go to About Page.'
 										as='a'
 										className={cn(
 											'block py-2',
 											currentPath.startsWith('/about') &&
 												'font-semibold text-accent-500 dark:text-accent-400'
 										)}
-										href="https://codybrunner.com/about"
+										href='https://codybrunner.com/about'
 									>
 										About
 									</PopoverButton>
-								</li> */}
+								</li>
 								<li>
 									<PopoverButton
 										aria-label='Go to Articles Page.'
@@ -121,32 +121,6 @@ export function MobileNav({
 										Articles
 									</PopoverButton>
 								</li>
-								{/* <li>
-									<PopoverButton
-										aria-label="Go to Boookshelf Page.""
-										as='a'
-										className={cn(
-											'block py-2',
-											currentPath.startsWith('/bookshelf') &&
-												'font-semibold text-accent-500 dark:text-accent-400'
-										)}
-										href="https://codybrunner.com/bookshelf"
-									>
-										Bookshelf
-									</PopoverButton>
-								</li> */}
-								{/* <li>
-									<PopoverButton
-										aria-label="Go to my Appointlet Booking Page."
-										as='a'
-										className='block py-2'
-										href='https://appt.link/cody-brunner-dev/video-call'
-										rel='noopener noreferrer'
-										target='_blank'
-									>
-										Meet
-									</PopoverButton>
-								</li> */}
 								<li>
 									<PopoverButton
 										aria-label='Go to Projects Page.'
@@ -161,20 +135,6 @@ export function MobileNav({
 										Projects
 									</PopoverButton>
 								</li>
-								{/* <li>
-									<PopoverButton
-										aria-label="Go to Uses Page."
-										as='a'
-										className={cn(
-											'block py-2',
-											currentPath.startsWith('/uses') &&
-												'font-semibold text-accent-500 dark:text-accent-400'
-										)}
-										href="https://codybrunner.com/uses"
-									>
-										Uses
-									</PopoverButton>
-								</li> */}
 							</ul>
 						</nav>
 						<div className='flex items-center justify-end'>

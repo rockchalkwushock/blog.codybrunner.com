@@ -15,6 +15,7 @@ import Link from '~/components/link.astro'
 import { MobileNav } from '~/components/mobile-nav'
 import OuterContainer from '~/components/outer-container.astro'
 import { ThemeToggle } from '~/components/theme-toggle'
+import ThemeScript from '~/components/scripts/theme-script.astro'
 
 // Utils
 import { cn } from '~/utils/helpers'
@@ -29,6 +30,8 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 <html lang='en'>
 	<head>
 		<slot name='metadata' />
+		<!-- Custom Scripts -->
+		<ThemeScript />
 	</head>
 	<body
 		class='flex h-full w-full flex-col bg-primary-100 font-sans text-primary-950 antialiased motion-safe:scroll-smooth dark:bg-primary-900 dark:text-primary-200'
@@ -125,7 +128,7 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 									<ul
 										class='flex rounded-full bg-white/90 px-3 text-sm font-medium shadow-lg shadow-primary-800/5 ring-1 ring-primary-900/5 backdrop-blur dark:bg-primary-800/90 dark:ring-white/10'
 									>
-										<!-- <li class='relative block px-3 py-2 transition'>
+										<li class='relative block px-3 py-2 transition'>
 											<Link
 												aria-label='Go to About Page.'
 												class={cn(
@@ -143,7 +146,7 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 													)
 												}
 											</Link>
-										</li> -->
+										</li>
 										<li class='relative block px-3 py-2 transition'>
 											<Link
 												aria-label='Go to Articles Page.'
@@ -163,25 +166,6 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 												}
 											</Link>
 										</li>
-										<!-- <li class='relative block px-3 py-2 transition'>
-											<Link
-												aria-label='Go to Bookshelf Page.'
-												class={cn(
-													'',
-													isActive('/bookshelf')
-														? 'text-accent-500 dark:text-accent-400'
-														: 'hover:text-accent-500 dark:hover:text-accent-400'
-												)}
-												href='https://codybrunner.com/bookshelf'
-											>
-												Bookshelf
-												{
-													isActive('/bookshelf') && (
-														<span class='absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-accent-500 via-accent-500/40 to-accent-500 dark:from-accent-400 dark:via-accent-400/40 dark:to-accent-400' />
-													)
-												}
-											</Link>
-										</li> -->
 										<li class='relative block px-3 py-2 transition'>
 											<Link
 												aria-label='Go to Projects Page.'
@@ -201,25 +185,6 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 												}
 											</Link>
 										</li>
-										<!-- <li class='relative block px-3 py-2 transition'>
-											<Link
-												aria-label='Go to Uses Page.'
-												class={cn(
-													'',
-													isActive('/uses')
-														? 'text-accent-500 dark:text-accent-400'
-														: 'hover:text-accent-500 dark:hover:text-accent-400'
-												)}
-												href='https://codybrunner.com/uses'
-											>
-												Uses
-												{
-													isActive('/uses') && (
-														<span class='absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-accent-500 via-accent-500/40 to-accent-500 dark:from-accent-400 dark:via-accent-400/40 dark:to-accent-400' />
-													)
-												}
-											</Link>
-										</li> -->
 									</ul>
 								</nav>
 							</div>
@@ -262,7 +227,7 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 												</li>
 											)
 										}
-										<!-- <li>
+										<li>
 											<Link
 												aria-label='Go to About Page.'
 												class={cn(
@@ -275,7 +240,7 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 											>
 												About
 											</Link>
-										</li> -->
+										</li>
 										<li>
 											<Link
 												aria-label='Go to Articles Page.'
@@ -290,31 +255,6 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 												Articles
 											</Link>
 										</li>
-										<!-- <li>
-											<Link
-												aria-label='Go to Bookshelf Page.'
-												class={cn(
-													'',
-													isActive('/bookshelf')
-														? 'text-accent-500 dark:text-accent-400'
-														: 'hover:text-accent-500 dark:hover:text-accent-400'
-												)}
-												href='https://codybrunner.com/bookshelf'
-											>
-												Bookshelf
-											</Link>
-										</li> -->
-										<!-- <li>
-											<Link
-												aria-label='Go to my Appointlet Booking Page.'
-												class='hover:text-accent-500 dark:hover:text-accent-400'
-												href='https://appt.link/cody-brunner-dev/video-call'
-												rel='noopener noreferrer'
-												target='_blank'
-											>
-												Meet
-											</Link>
-										</li> -->
 										<li>
 											<Link
 												aria-label='Go to Projects Page.'
@@ -329,20 +269,6 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 												Projects
 											</Link>
 										</li>
-										<!-- <li>
-											<Link
-												aria-label='Go to Uses Page.'
-												class={cn(
-													'',
-													isActive('/uses')
-														? 'text-accent-500 dark:text-accent-400'
-														: 'hover:text-accent-500 dark:hover:text-accent-400'
-												)}
-												href='https://codybrunner.com/uses'
-											>
-												Uses
-											</Link>
-										</li> -->
 									</ul>
 									<div class='flex flex-col gap-4'>
 										<div
@@ -350,13 +276,13 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 										>
 											<div class='flex items-center space-x-1'>
 												<span
-													class='text-center text-sm text-primary-400 sm:text-right dark:text-primary-500'
+													class='text-center text-sm text-primary-400 dark:text-primary-500 sm:text-right'
 													>© 2016-{new Date().getFullYear()} Cody Brunner</span
 												>
 											</div>
 											<Link
 												aria-label='All rights reserved.'
-												class='text-center text-sm text-primary-400 hover:text-accent-500 sm:text-right dark:text-primary-500 dark:hover:text-accent-400'
+												class='text-center text-sm text-primary-400 hover:text-accent-500 dark:text-primary-500 dark:hover:text-accent-400 sm:text-right'
 												href='http://creativecommons.org/licenses/by-nc-nd/4.0'
 												rel='noopener noreferrer'
 												target='_blank'
@@ -365,7 +291,7 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 											</Link>
 											<Link
 												aria-label='Go to my RSS Feed.'
-												class='text-center text-sm text-primary-400 hover:text-accent-500 sm:text-right dark:text-primary-500 dark:hover:text-accent-400'
+												class='text-center text-sm text-primary-400 hover:text-accent-500 dark:text-primary-500 dark:hover:text-accent-400 sm:text-right'
 												href='/rss.xml'
 											>
 												RSS Feed
@@ -382,27 +308,5 @@ const isHomePage = Astro.url.href === 'https://codybrunner.com/'
 				</OuterContainer>
 			</footer>
 		</div>
-		<!-- Themeing Script -->
-		<script is:inline>
-			const theme = (() => {
-				if (
-					typeof localStorage !== 'undefined' &&
-					localStorage.getItem('theme')
-				) {
-					return localStorage.getItem('theme')
-				}
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					return 'dark'
-				}
-				return 'light'
-			})()
-
-			if (theme === 'light') {
-				document.documentElement.classList.remove('dark')
-			} else {
-				document.documentElement.classList.add('dark')
-			}
-			window.localStorage.setItem('theme', theme)
-		</script>
 	</body>
 </html>
